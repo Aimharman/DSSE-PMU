@@ -43,9 +43,21 @@ PRINT_SYNC_OFFSETS = True
 
 FREQUENCY = 50                 # Hz
 ODR = 1000                     # Samples/sec
-AMPLITUDE = 10                 # Peak Current
-SIMULATION_TIME = 3.5           # seconds
+#AMPLITUDE = 10                 # Peak Current
+SIMULATION_TIME = 0.5           # seconds
 DISPLAY_WINDOW = 0.10          # seconds displayed on screen
+
+###########################################################################
+# CURRENT SIGNAL
+###########################################################################
+
+CURRENT_AMPLITUDE = 10      # Peak Current (A)
+
+###########################################################################
+# VOLTAGE SIGNAL
+###########################################################################
+
+VOLTAGE_AMPLITUDE = 325     # Peak Voltage (230 Vrms)
 
 ###########################################################################
 # MEASUREMENT CHALLENGE CONFIGURATION
@@ -126,24 +138,59 @@ N = int(ODR / FREQUENCY)       # One-cycle DFT window (20 samples)
 
 sample_index = 0
 
+#--------------------------------------
+# WAVEFORM STORAGE
+#--------------------------------------
+
 signal_time = []
-#signal_value = []
 
-signal1 = []
-signal2 = []
-signal3 = []
+#--------------------------------------
+# VOLTAGE SIGNAL STORAGE
+#--------------------------------------
 
-dft_time1 = []
-dft_mag1 = []
-dft_phase1 = []
+voltage_signal1 = []
+voltage_signal2 = []
+voltage_signal3 = []
 
-dft_time2 = []
-dft_mag2 = []
-dft_phase2 = []
+#--------------------------------------
+# CURRENT SIGNAL STORAGE
+#--------------------------------------
 
-dft_time3 = []
-dft_mag3 = []
-dft_phase3 = []
+current_signal1 = []
+current_signal2 = []
+current_signal3 = []
+
+#--------------------------------------
+# VOLTAGE DFT STORAGE
+#--------------------------------------
+
+voltage_dft_time1 = []
+voltage_dft_mag1 = []
+voltage_dft_phase1 = []
+
+voltage_dft_time2 = []
+voltage_dft_mag2 = []
+voltage_dft_phase2 = []
+
+voltage_dft_time3 = []
+voltage_dft_mag3 = []
+voltage_dft_phase3 = []
+
+#--------------------------------------
+# CURRENT DFT STORAGE
+#--------------------------------------
+
+current_dft_time1 = []
+current_dft_mag1 = []
+current_dft_phase1 = []
+
+current_dft_time2 = []
+current_dft_mag2 = []
+current_dft_phase2 = []
+
+current_dft_time3 = []
+current_dft_mag3 = []
+current_dft_phase3 = []
 
 
 ###########################################################################
@@ -159,9 +206,12 @@ columns = [
 
     "Time (s)",
 
-    "Signal 1 (A)",
-    "Signal 2 (A)",
-    "Signal 3 (A)",
+    "Voltage 1 (V)",
+    "Current 1 (A)",
+    "Voltage 2 (V)",
+    "Current 2 (A)",
+    "Voltage 3 (V)",
+    "Current 3 (A)",
 
     "Peak (A)",
 
@@ -169,12 +219,18 @@ columns = [
 
     "Delta t (s)",
 
-    "DFT1 Real",
-    "DFT1 Imag",
-    "DFT1 Magnitude",
-    "DFT1 Phase (deg)",
-    "DFT1 RMS",
-    # PMU1 Challenge Metadata
+    "Voltage 1 DFT Real",
+    "Voltage 1 DFT Imag",
+    "Voltage 1 DFT Magnitude",
+    "Voltage 1 DFT Phase (deg)",
+    "Voltage 1 DFT RMS",
+    "Current 1 DFT Real",
+    "Current 1 DFT Imag",
+    "Current 1 DFT Magnitude",
+    "Current 1 DFT Phase (deg)",
+    "Current 1 DFT RMS",
+
+# PMU1 Challenge Metadata
     "PMU1 Sync Offset",
     "PMU1 Mag Noise",
     "PMU1 Phase Noise",
@@ -182,11 +238,18 @@ columns = [
     "PMU1 Packet Loss",
     "PMU1 Bad Data",
 
-    "DFT2 Real",
-    "DFT2 Imag",
-    "DFT2 Magnitude",
-    "DFT2 Phase (deg)",
-    "DFT2 RMS",
+    "Voltage 2 DFT Real",
+    "Voltage 2 DFT Imag",
+    "Voltage 2 DFT Magnitude",
+    "Voltage 2 DFT Phase (deg)",
+    "Voltage 2 DFT RMS",
+    "Current 2 DFT Real",
+    "Current 2 DFT Imag",
+    "Current 2 DFT Magnitude",
+    "Current 2 DFT Phase (deg)",
+    "Current 2 DFT RMS",
+
+
     "PMU2 Sync Offset",
     "PMU2 Mag Noise",
     "PMU2 Phase Noise",
@@ -194,11 +257,18 @@ columns = [
     "PMU2 Packet Loss",
     "PMU2 Bad Data",
 
-    "DFT3 Real",
-    "DFT3 Imag",
-    "DFT3 Magnitude",
-    "DFT3 Phase (deg)",
-    "DFT3 RMS",
+    "Voltage 3 DFT Real",
+    "Voltage 3 DFT Imag",
+    "Voltage 3 DFT Magnitude",
+    "Voltage 3 DFT Phase (deg)",
+    "Voltage 3 DFT RMS",
+    "Current 3 DFT Real",
+    "Current 3 DFT Imag",
+    "Current 3 DFT Magnitude",
+    "Current 3 DFT Phase (deg)",
+    "Current 3 DFT RMS",
+
+    
     "PMU3 Sync Offset",
     "PMU3 Mag Noise",
     "PMU3 Phase Noise",
@@ -212,9 +282,26 @@ columns = [
 # DFT BUFFER
 ###########################################################################
 
-dft_buffer1 = deque(maxlen=N)
-dft_buffer2 = deque(maxlen=N)
-dft_buffer3 = deque(maxlen=N)
+# dft_buffer1 = deque(maxlen=N)
+# dft_buffer2 = deque(maxlen=N)
+# dft_buffer3 = deque(maxlen=N)
+
+###########################################################################
+# CURRENT DFT BUFFERS
+###########################################################################
+
+current_dft_buffer1 = deque(maxlen=N)
+current_dft_buffer2 = deque(maxlen=N)
+current_dft_buffer3 = deque(maxlen=N)
+
+###########################################################################
+# VOLTAGE DFT BUFFERS
+###########################################################################
+
+voltage_dft_buffer1 = deque(maxlen=N)
+voltage_dft_buffer2 = deque(maxlen=N)
+voltage_dft_buffer3 = deque(maxlen=N)
+
 
 ###########################################################################
 # QT APPLICATION
@@ -284,8 +371,8 @@ curve_signal3 = plot_signal.plot(
 )
 
 plot_signal.setYRange(
-    -1.2 * AMPLITUDE,
-    1.2 * AMPLITUDE
+    -1.2 * CURRENT_AMPLITUDE,
+    1.2 * CURRENT_AMPLITUDE
 )
 
 ###########################################################################
@@ -571,25 +658,6 @@ def apply_measurement_challenges(mag,phase,t,sync_offset,sample_index,pmu_id):
                 print(f"[Sample {sample_index}] "f"PMU {pmu_id} packet lost")
             return np.nan, np.nan, metadata
 
-    # ###################################################
-    # # 5. Bad Data
-    # ###################################################
-
-    # if ENABLE_BAD_DATA:
-
-    #     if np.random.rand() < BAD_DATA_PROB:
-
-    #         metadata["bad_data"] = True
-
-    #         if np.random.rand() < 0.5:
-
-    #             measured_phase += BAD_PHASE_ERROR
-
-    #         else:
-
-    #             measured_mag *= BAD_MAG_SCALE
-
-    # return measured_mag, measured_phase, metadata
 
     ###################################################
     # 5. Bad Data
@@ -678,18 +746,22 @@ def update():
         app.quit()
         return
 
-    # ---------------------------------------------------------------
+
+    ###########################################################################
     # Generate one sample at current time step
-    # ---------------------------------------------------------------
-    
+    ###########################################################################
+
     # Calculate current time in seconds
     t = sample_index * DT
+
 
     # SIGNAL 1: Pure sinusoidal waveform
     # Formula: I(t) = Im * sin(ωt)
     # Where: Im = amplitude (peak), ω = 2πf (angular frequency)
     # This represents an ideal, undistorted current signal
-    current1 = AMPLITUDE * np.sin(OMEGA * t)
+    current1 = CURRENT_AMPLITUDE * np.sin(OMEGA * t)
+    # Voltage 1 : Ideal sinusoid
+    voltage1 = VOLTAGE_AMPLITUDE * np.sin(OMEGA * t)
 
     # SIGNAL 2: Phase-shifted sinusoidal waveform
     # Formula: I(t) = Im * sin(ω(t + Δt))
@@ -697,7 +769,10 @@ def update():
     # This represents a signal with a fixed time delay relative to signal 1
     # Useful for simulating propagation delays or phase shifts
     TIME_DELAY = 0.001      # seconds (1 millisecond)
-    current2 = AMPLITUDE * np.sin(OMEGA * (t + TIME_DELAY))
+    current2 = CURRENT_AMPLITUDE * np.sin(OMEGA * (t + TIME_DELAY))
+    # Voltage 2 : Time delayed
+    voltage2 = VOLTAGE_AMPLITUDE * np.sin(OMEGA * (t + TIME_DELAY))
+
 
     # SIGNAL 3: Sinusoidal with decaying phase modulation (exponential transient)
     # Formula: I(t) = Im * sin(ωt + I₀*e^(-t/τ))
@@ -709,7 +784,10 @@ def update():
     I0 = np.deg2rad(45)      # Initial phase offset (45° converted to radians)
     tau = 0.5                # Time constant in seconds (decay rate)
     phase_mod = I0 * np.exp(-t/tau)  # Exponentially decaying phase modulation
-    current3 = AMPLITUDE * np.sin(OMEGA * t + phase_mod)
+    current3 = CURRENT_AMPLITUDE * np.sin(OMEGA * t + phase_mod)
+    # Voltage 3 : Exponential transient
+    voltage3 = VOLTAGE_AMPLITUDE * np.sin(OMEGA * t + phase_mod)
+
 
     # Signal angle calculation (theoretical phase angle of an ideal signal)
     # This is the expected phase if the signal were pure sinusoidal
@@ -737,13 +815,27 @@ def update():
     real2 = imag2 = mag2 = phase2 = rms2 = np.nan
     real3 = imag3 = mag3 = phase3 = rms3 = np.nan
 
+    v_real1 = v_imag1 = v_mag1 = v_phase1 = v_rms1 = np.nan
+    v_real2 = v_imag2 = v_mag2 = v_phase2 = v_rms2 = np.nan
+    v_real3 = v_imag3 = v_mag3 = v_phase3 = v_rms3 = np.nan
+
+    v_meta1 = meta1.copy()
+    v_meta2 = meta2.copy()
+    v_meta3 = meta3.copy()
+
     # ---------------------------------------------------------------
     # Store waveform data for plotting
     # ---------------------------------------------------------------
+    
     signal_time.append(t)
-    signal1.append(current1)
-    signal2.append(current2)
-    signal3.append(current3)
+
+    voltage_signal1.append(voltage1)
+    voltage_signal2.append(voltage2)
+    voltage_signal3.append(voltage3)
+
+    current_signal1.append(current1)
+    current_signal2.append(current2)
+    current_signal3.append(current3)
 
     global BAD_PMU
     if (
@@ -761,15 +853,57 @@ def update():
     
     # Add new samples to circular buffers (FIFO - First In First Out)
     # When buffer reaches max length, oldest samples are automatically discarded
-    dft_buffer1.append(current1)
-    dft_buffer2.append(current2)
-    dft_buffer3.append(current3)
+    # dft_buffer1.append(current1)
+    # dft_buffer2.append(current2)
+    # dft_buffer3.append(current3)
+
+    # ---------------------------------------------------------------
+    # Update Current DFT Buffers
+    # ---------------------------------------------------------------
+
+    current_dft_buffer1.append(current1)
+    current_dft_buffer2.append(current2)
+    current_dft_buffer3.append(current3)
+
+    # ---------------------------------------------------------------
+    # Update Voltage DFT Buffers
+    # ---------------------------------------------------------------
+
+    voltage_dft_buffer1.append(voltage1)
+    voltage_dft_buffer2.append(voltage2)
+    voltage_dft_buffer3.append(voltage3)
 
     # Compute DFT when buffer has collected one full cycle of samples
     # This ensures DFT is computed on exactly one cycle (N samples = 1/50 seconds)
-    if len(dft_buffer1) == N:
+
+    # ---------------------------------------------------------------
+    # Voltage DFT
+    # ---------------------------------------------------------------
+
+    if len(voltage_dft_buffer1) == N:
+
+        (
+            v_real1,
+            v_imag1,
+            v_mag1,
+            v_phase1,
+            v_rms1
+        ) = compute_dft(voltage_dft_buffer1)
+        v_mag1, v_phase1, v_meta1 = apply_measurement_challenges(
+            v_mag1,
+            v_phase1,
+            t,
+            PMU1_SYNC_OFFSET,
+            sample_index,
+            1
+        )
+        voltage_dft_time1.append(t)
+        voltage_dft_mag1.append(v_mag1)
+        voltage_dft_phase1.append(v_phase1)
+
+    if len(current_dft_buffer1) == N:
         # Compute DFT for Signal 1
-        real1, imag1, mag1, phase1, rms1 = compute_dft(dft_buffer1)
+        real1, imag1, mag1, phase1, rms1 = compute_dft(current_dft_buffer1)
         mag1, phase1, meta1 = apply_measurement_challenges(mag1,phase1,t,PMU1_SYNC_OFFSET,sample_index,1)
         if meta1["packet_loss"]:
             real1 = np.nan
@@ -777,35 +911,75 @@ def update():
             rms1 = np.nan
         
         # Store DFT results for plotting
-        dft_time1.append(t)
-        dft_mag1.append(mag1)
-        dft_phase1.append(phase1)
+        current_dft_time1.append(t)
+        current_dft_mag1.append(mag1)
+        current_dft_phase1.append(phase1)
 
-    if len(dft_buffer2) == N:
+    if len(voltage_dft_buffer2) == N:
+        (
+            v_real2,
+            v_imag2,
+            v_mag2,
+            v_phase2,
+            v_rms2
+        ) = compute_dft(voltage_dft_buffer2)
+        v_mag2, v_phase2, v_meta2 = apply_measurement_challenges(
+            v_mag2,
+            v_phase2,
+            t,
+            PMU2_SYNC_OFFSET,
+            sample_index,
+            2
+        )
+        voltage_dft_time2.append(t)
+        voltage_dft_mag2.append(v_mag2)
+        voltage_dft_phase2.append(v_phase2)
+
+    if len(current_dft_buffer2) == N:
         # Compute DFT for Signal 2
-        real2, imag2, mag2, phase2, rms2 = compute_dft(dft_buffer2)
+        real2, imag2, mag2, phase2, rms2 = compute_dft(current_dft_buffer2)
         mag2, phase2, meta2 = apply_measurement_challenges(mag2,phase2,t,PMU2_SYNC_OFFSET,sample_index,2)
         if meta2["packet_loss"]:
             real2 = np.nan
             imag2 = np.nan
             rms2 = np.nan
         # Store DFT results for plotting
-        dft_time2.append(t)
-        dft_mag2.append(mag2)
-        dft_phase2.append(phase2)
+        current_dft_time2.append(t)
+        current_dft_mag2.append(mag2)
+        current_dft_phase2.append(phase2)
 
-    if len(dft_buffer3) == N:
+    if len(voltage_dft_buffer3) == N:
+        (
+            v_real3,
+            v_imag3,
+            v_mag3,
+            v_phase3,
+            v_rms3
+        ) = compute_dft(voltage_dft_buffer3)
+        v_mag3, v_phase3, v_meta3 = apply_measurement_challenges(
+            v_mag3,
+            v_phase3,
+            t,
+            PMU3_SYNC_OFFSET,
+            sample_index,
+            3
+        )
+        voltage_dft_time3.append(t)
+        voltage_dft_mag3.append(v_mag3)
+        voltage_dft_phase3.append(v_phase3)
+
+    if len(current_dft_buffer3) == N:
         # Compute DFT for Signal 3
-        real3, imag3, mag3, phase3, rms3 = compute_dft(dft_buffer3)
+        real3, imag3, mag3, phase3, rms3 = compute_dft(current_dft_buffer3)
         mag3, phase3, meta3 = apply_measurement_challenges(mag3,phase3,t,PMU3_SYNC_OFFSET,sample_index,3)
         if meta3["packet_loss"]:
             real3 = np.nan
             imag3 = np.nan
             rms3 = np.nan
         # Store DFT results for plotting
-        dft_time3.append(t)
-        dft_mag3.append(mag3)
-        dft_phase3.append(phase3)
+        current_dft_time3.append(t)
+        current_dft_mag3.append(mag3)
+        current_dft_phase3.append(phase3)
 
     # ---------------------------------------------------------------
     # CSV Data Storage
@@ -814,19 +988,24 @@ def update():
     # This creates a comprehensive record of all signal and DFT values
     csv_rows.append([
         t,                      # Time stamp
+        voltage1,               # Signal 1 raw value
         current1,               # Signal 1 raw value
-        current2,               # Signal 2 raw value  
+        voltage2,               # Signal 2 raw value
+        current2,               # Signal 2 raw value
+        voltage3,               # Signal 3 raw value
         current3,               # Signal 3 raw value
-        AMPLITUDE,              # Reference amplitude
+        CURRENT_AMPLITUDE,      # Reference amplitude
         signal_angle,           # Theoretical angle
         delta_t,                # Time step
-        real1, imag1, mag1, phase1, rms1,  # DFT results for Signal 1
+        v_real1, v_imag1, v_mag1, v_phase1, v_rms1,     # DFT results for Signal 1
+        real1, imag1, mag1, phase1, rms1,               # DFT results for Signal 1
         meta1["sync_error"],
         meta1["mag_noise"],
         meta1["phase_noise"],
         meta1["clock_drift"],
         meta1["packet_loss"],
         meta1["bad_data"],
+        v_real2, v_imag2, v_mag2, v_phase2, v_rms2,     # DFT results for Signal 2
         real2, imag2, mag2, phase2, rms2,  # DFT results for Signal 2
         meta2["sync_error"],
         meta2["mag_noise"],
@@ -834,6 +1013,7 @@ def update():
         meta2["clock_drift"],
         meta2["packet_loss"],
         meta2["bad_data"],
+        v_real3, v_imag3, v_mag3, v_phase3, v_rms3,     # DFT results for Signal 3
         real3, imag3, mag3, phase3, rms3,   # DFT results for Signal 3
         meta3["sync_error"],
         meta3["mag_noise"],
@@ -847,9 +1027,9 @@ def update():
     # Update Signal Plot (Waveform Display)
     # ---------------------------------------------------------------
     # Update all three signal curves with new data
-    curve_signal1.setData(signal_time, signal1)
-    curve_signal2.setData(signal_time, signal2)
-    curve_signal3.setData(signal_time, signal3)
+    curve_signal1.setData(signal_time, current_signal1)
+    curve_signal2.setData(signal_time, current_signal2)
+    curve_signal3.setData(signal_time, current_signal3)
 
     # Auto-scroll the waveform display window
     # For first DISPLAY_WINDOW seconds: show from time 0
@@ -863,10 +1043,10 @@ def update():
     # Update Magnitude Plot (DFT Magnitude Display)
     # ---------------------------------------------------------------
     # Only update magnitude plot once DFT data is available
-    if len(dft_time3) > 0:
-        curve_mag1.setData(dft_time1, dft_mag1)
-        curve_mag2.setData(dft_time2, dft_mag2)
-        curve_mag3.setData(dft_time3, dft_mag3)
+    if len(current_dft_time3) > 0:
+        curve_mag1.setData(current_dft_time1, current_dft_mag1)
+        curve_mag2.setData(current_dft_time2, current_dft_mag2)
+        curve_mag3.setData(current_dft_time3, current_dft_mag3)
         
         # Auto-scroll magnitude plot to match waveform
         if t < DISPLAY_WINDOW:
@@ -878,10 +1058,10 @@ def update():
     # Update Phase Plot (DFT Phase Display)
     # ---------------------------------------------------------------
     # Only update phase plot once DFT data is available
-    if len(dft_time3) > 0:
-        curve_phase1.setData(dft_time1, dft_phase1)
-        curve_phase2.setData(dft_time2, dft_phase2)
-        curve_phase3.setData(dft_time3, dft_phase3)
+    if len(current_dft_time3) > 0:
+        curve_phase1.setData(current_dft_time1, current_dft_phase1)
+        curve_phase2.setData(current_dft_time2, current_dft_phase2)
+        curve_phase3.setData(current_dft_time3, current_dft_phase3)
 
         # Auto-scroll phase plot to match waveform
         if t < DISPLAY_WINDOW:
