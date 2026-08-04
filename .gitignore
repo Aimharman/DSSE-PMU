@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.venv/
+venv/
+env/
+
+# VS Code
+.vscode/
+
+# PyInstaller
+build/
+dist/
+*.spec
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Qt
+*.qm
+
+# Temporary
+*.tmp
