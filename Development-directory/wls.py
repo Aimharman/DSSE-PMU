@@ -34,6 +34,13 @@ import numpy as np
 
 from measurement_model import measurement_model
 from jacobian import compute_jacobian
+from network_model import NUM_BUSES
+
+from measurement_model import (
+    measurement_model,
+    state_to_voltage,
+    compute_currents
+)
 
 max_iterations = 250
 tolerance = 1e-6
@@ -151,6 +158,35 @@ class WeightedLeastSquares:
 
                 break
 
+        ########################################################
+        # Final Consistency Check
+        ########################################################
+
+        V = state_to_voltage(x)
+
+        I = compute_currents(V)
+
+        print("\n==============================================")
+        print(" Current Measurement Consistency")
+        print("==============================================")
+
+        for bus in range(NUM_BUSES):
+
+            idx = 4 * bus
+
+            measured_mag = z[idx + 2]
+            measured_ang = np.degrees(z[idx + 3])
+
+            predicted_mag = np.abs(I[bus])
+            predicted_ang = np.degrees(np.angle(I[bus]))
+
+            print(f"\nBus {bus+1}")
+
+            print(f"Measured Current Magnitude  : {measured_mag:.6f}")
+            print(f"Predicted Current Magnitude : {predicted_mag:.6f}")
+
+            print(f"Measured Current Angle      : {measured_ang:.6f} deg")
+            print(f"Predicted Current Angle     : {predicted_ang:.6f} deg")
         print("\n==============================================")
         print(" Final Estimated State")
         print("==============================================")

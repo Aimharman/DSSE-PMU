@@ -29,6 +29,7 @@ from PyQt6.QtCore import (
 )
 
 from load_profiles import get_loads
+from network_model import YBUS
 
 ###########################################################################
 # DEBUG / LOGGING CONFIGURATION
@@ -763,56 +764,104 @@ def update():
 
     LOAD1, LOAD2, LOAD3 = get_loads(t)
 
+    # ########################################################
+    # # Load Current
+    # ########################################################
+
+    # I1_peak = CURRENT_AMPLITUDE * LOAD1
+    # I2_peak = CURRENT_AMPLITUDE * LOAD2
+    # I3_peak = CURRENT_AMPLITUDE * LOAD3
+
+    # ########################################################
+    # # Voltage Drop (Ohm's Law)
+    # ########################################################
+
+    # V1_peak = VOLTAGE_AMPLITUDE - (I1_peak * LINE_RESISTANCE)
+    # V2_peak = V1_peak - (I2_peak * LINE_RESISTANCE)
+    # V3_peak = V2_peak - (I3_peak * LINE_RESISTANCE)
+
     ########################################################
-    # Load Current
+    # Complex Bus Voltages (per-unit)
     ########################################################
 
-    I1_peak = CURRENT_AMPLITUDE * LOAD1
-    I2_peak = CURRENT_AMPLITUDE * LOAD2
-    I3_peak = CURRENT_AMPLITUDE * LOAD3
+    V = np.array([
+        (1.00 - 0.02 * (LOAD1 - 1.0)) * np.exp(1j * np.deg2rad(0.0)),
+        (1.00 - 0.02 * (LOAD2 - 1.0)) * np.exp(1j * np.deg2rad(-2.0)),
+        (1.00 - 0.02 * (LOAD3 - 1.0)) * np.exp(1j * np.deg2rad(-4.0))
+    ])
 
     ########################################################
-    # Voltage Drop (Ohm's Law)
+    # Network Currents
+    #
+    # I = YBUS · V
     ########################################################
 
-    V1_peak = VOLTAGE_AMPLITUDE - (I1_peak * LINE_RESISTANCE)
+    I = YBUS @ V
 
-    V2_peak = V1_peak - (I2_peak * LINE_RESISTANCE)
+    ########################################################
+    # Voltage Peak Values
+    ########################################################
 
-    V3_peak = V2_peak - (I3_peak * LINE_RESISTANCE)
+    V1_peak = np.abs(V[0]) * VOLTAGE_AMPLITUDE
+    V2_peak = np.abs(V[1]) * VOLTAGE_AMPLITUDE
+    V3_peak = np.abs(V[2]) * VOLTAGE_AMPLITUDE
 
-    # SIGNAL 1: Pure sinusoidal waveform
-    # Formula: I(t) = Im * sin(ωt)
-    # Where: Im = amplitude (peak), ω = 2πf (angular frequency)
-    # This represents an ideal, undistorted current signal
-    current1 = I1_peak * LOAD1 * np.sin(OMEGA * t)
-    # Voltage 1 : Ideal sinusoid
-    voltage1 = V1_peak * np.sin(OMEGA * t)
+    ########################################################
+    # Current Peak Values
+    ########################################################
 
-    # SIGNAL 2: Phase-shifted sinusoidal waveform
-    # Formula: I(t) = Im * sin(ω(t + Δt))
-    # Where: Δt = 0.001 seconds (1 ms time delay)
-    # This represents a signal with a fixed time delay relative to signal 1
-    # Useful for simulating propagation delays or phase shifts
-    TIME_DELAY = 0.001      # seconds (1 millisecond)
-    current2 = I2_peak * LOAD2 * np.sin(OMEGA * (t + TIME_DELAY))
-    # Voltage 2 : Time delayed
-    voltage2 = V2_peak * np.sin(OMEGA * (t + TIME_DELAY))
+    I1_peak = np.abs(I[0]) * CURRENT_AMPLITUDE
+    I2_peak = np.abs(I[1]) * CURRENT_AMPLITUDE
+    I3_peak = np.abs(I[2]) * CURRENT_AMPLITUDE
+
+    # # SIGNAL 1: Pure sinusoidal waveform
+    # # Formula: I(t) = Im * sin(ωt)
+    # # Where: Im = amplitude (peak), ω = 2πf (angular frequency)
+    # # This represents an ideal, undistorted current signal
+    # current1 = I1_peak * LOAD1 * np.sin(OMEGA * t)
+    # # Voltage 1 : Ideal sinusoid
+    # voltage1 = V1_peak * np.sin(OMEGA * t)
+
+    # # SIGNAL 2: Phase-shifted sinusoidal waveform
+    # # Formula: I(t) = Im * sin(ω(t + Δt))
+    # # Where: Δt = 0.001 seconds (1 ms time delay)
+    # # This represents a signal with a fixed time delay relative to signal 1
+    # # Useful for simulating propagation delays or phase shifts
+    # TIME_DELAY = 0.001      # seconds (1 millisecond)
+    # current2 = I2_peak * LOAD2 * np.sin(OMEGA * (t + TIME_DELAY))
+    # # Voltage 2 : Time delayed
+    # voltage2 = V2_peak * np.sin(OMEGA * (t + TIME_DELAY))
 
 
-    # SIGNAL 3: Sinusoidal with decaying phase modulation (exponential transient)
-    # Formula: I(t) = Im * sin(ωt + I₀*e^(-t/τ))
-    # Where: 
-    #   I₀ = 45° initial phase offset (converted to radians)
-    #   τ = 0.5 seconds time constant
-    # This represents a phase transient that decays exponentially
-    # Common in system faults, motor startup, or generator synchronization
-    I0 = np.deg2rad(45)      # Initial phase offset (45° converted to radians)
-    tau = 0.5                # Time constant in seconds (decay rate)
-    phase_mod = I0 * np.exp(-t/tau)  # Exponentially decaying phase modulation
-    current3 = I3_peak * LOAD3 * np.sin(OMEGA * t + phase_mod)
-    # Voltage 3 : Exponential transient
-    voltage3 = V3_peak * np.sin(OMEGA * t + phase_mod)
+    # # SIGNAL 3: Sinusoidal with decaying phase modulation (exponential transient)
+    # # Formula: I(t) = Im * sin(ωt + I₀*e^(-t/τ))
+    # # Where: 
+    # #   I₀ = 45° initial phase offset (converted to radians)
+    # #   τ = 0.5 seconds time constant
+    # # This represents a phase transient that decays exponentially
+    # # Common in system faults, motor startup, or generator synchronization
+    # I0 = np.deg2rad(45)      # Initial phase offset (45° converted to radians)
+    # tau = 0.5                # Time constant in seconds (decay rate)
+    # phase_mod = I0 * np.exp(-t/tau)  # Exponentially decaying phase modulation
+    # current3 = I3_peak * LOAD3 * np.sin(OMEGA * t + phase_mod)
+    # # Voltage 3 : Exponential transient
+    # voltage3 = V3_peak * np.sin(OMEGA * t + phase_mod)
+
+    ########################################################
+    # Voltage Waveforms
+    ########################################################
+
+    voltage1 = V1_peak * np.sin(OMEGA * t + np.angle(V[0]))
+    voltage2 = V2_peak * np.sin(OMEGA * t + np.angle(V[1]))
+    voltage3 = V3_peak * np.sin(OMEGA * t + np.angle(V[2]))
+
+    ########################################################
+    # Current Waveforms
+    ########################################################
+
+    current1 = I1_peak * np.sin(OMEGA * t + np.angle(I[0]))
+    current2 = I2_peak * np.sin(OMEGA * t + np.angle(I[1]))
+    current3 = I3_peak * np.sin(OMEGA * t + np.angle(I[2]))
 
 
     # Signal angle calculation (theoretical phase angle of an ideal signal)
