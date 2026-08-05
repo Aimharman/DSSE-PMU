@@ -20,6 +20,7 @@ Initial State Vector (x0)
 """
 
 from state_estimator import StateEstimator
+from wls import WeightedLeastSquares
 
 ###########################################################################
 # CONFIGURATION
@@ -50,7 +51,20 @@ def main():
 
     print("\nShape :", H.shape)
 
-    print("\nStage 3.1 Complete")
+    print("\nStage 3.4 Complete")
+
+    solver = WeightedLeastSquares()
+
+    x_final = solver.solve(
+
+        estimator.z,
+        estimator.x
+
+    )
+
+    print("\nEstimated State")
+
+    print(x_final)
 
 
 ###########################################################################
