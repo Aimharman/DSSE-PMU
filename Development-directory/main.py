@@ -41,6 +41,15 @@ def main():
 
     estimator.run()
 
+    from jacobian import compute_jacobian
+
+    H = compute_jacobian(estimator.x)
+
+    print("\nJacobian Matrix\n")
+    print(H)
+
+    print("\nShape :", H.shape)
+
     print("\nStage 3.1 Complete")
 
 

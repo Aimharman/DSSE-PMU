@@ -28,6 +28,8 @@ from PyQt6.QtCore import (
     QTimer
 )
 
+from load_profiles import get_loads
+
 ###########################################################################
 # DEBUG / LOGGING CONFIGURATION
 ###########################################################################
@@ -58,6 +60,7 @@ CURRENT_AMPLITUDE = 10      # Peak Current (A)
 ###########################################################################
 
 VOLTAGE_AMPLITUDE = 325     # Peak Voltage (230 Vrms)
+LINE_RESISTANCE = 0.30      # Ohm
 
 ###########################################################################
 # MEASUREMENT CHALLENGE CONFIGURATION
@@ -754,14 +757,37 @@ def update():
     # Calculate current time in seconds
     t = sample_index * DT
 
+    ########################################################
+    # Dynamic Load Profiles
+    ########################################################
+
+    LOAD1, LOAD2, LOAD3 = get_loads(t)
+
+    ########################################################
+    # Load Current
+    ########################################################
+
+    I1_peak = CURRENT_AMPLITUDE * LOAD1
+    I2_peak = CURRENT_AMPLITUDE * LOAD2
+    I3_peak = CURRENT_AMPLITUDE * LOAD3
+
+    ########################################################
+    # Voltage Drop (Ohm's Law)
+    ########################################################
+
+    V1_peak = VOLTAGE_AMPLITUDE - (I1_peak * LINE_RESISTANCE)
+
+    V2_peak = V1_peak - (I2_peak * LINE_RESISTANCE)
+
+    V3_peak = V2_peak - (I3_peak * LINE_RESISTANCE)
 
     # SIGNAL 1: Pure sinusoidal waveform
     # Formula: I(t) = Im * sin(ωt)
     # Where: Im = amplitude (peak), ω = 2πf (angular frequency)
     # This represents an ideal, undistorted current signal
-    current1 = CURRENT_AMPLITUDE * np.sin(OMEGA * t)
+    current1 = I1_peak * LOAD1 * np.sin(OMEGA * t)
     # Voltage 1 : Ideal sinusoid
-    voltage1 = VOLTAGE_AMPLITUDE * np.sin(OMEGA * t)
+    voltage1 = V1_peak * np.sin(OMEGA * t)
 
     # SIGNAL 2: Phase-shifted sinusoidal waveform
     # Formula: I(t) = Im * sin(ω(t + Δt))
@@ -769,9 +795,9 @@ def update():
     # This represents a signal with a fixed time delay relative to signal 1
     # Useful for simulating propagation delays or phase shifts
     TIME_DELAY = 0.001      # seconds (1 millisecond)
-    current2 = CURRENT_AMPLITUDE * np.sin(OMEGA * (t + TIME_DELAY))
+    current2 = I2_peak * LOAD2 * np.sin(OMEGA * (t + TIME_DELAY))
     # Voltage 2 : Time delayed
-    voltage2 = VOLTAGE_AMPLITUDE * np.sin(OMEGA * (t + TIME_DELAY))
+    voltage2 = V2_peak * np.sin(OMEGA * (t + TIME_DELAY))
 
 
     # SIGNAL 3: Sinusoidal with decaying phase modulation (exponential transient)
@@ -784,9 +810,9 @@ def update():
     I0 = np.deg2rad(45)      # Initial phase offset (45° converted to radians)
     tau = 0.5                # Time constant in seconds (decay rate)
     phase_mod = I0 * np.exp(-t/tau)  # Exponentially decaying phase modulation
-    current3 = CURRENT_AMPLITUDE * np.sin(OMEGA * t + phase_mod)
+    current3 = I3_peak * LOAD3 * np.sin(OMEGA * t + phase_mod)
     # Voltage 3 : Exponential transient
-    voltage3 = VOLTAGE_AMPLITUDE * np.sin(OMEGA * t + phase_mod)
+    voltage3 = V3_peak * np.sin(OMEGA * t + phase_mod)
 
 
     # Signal angle calculation (theoretical phase angle of an ideal signal)

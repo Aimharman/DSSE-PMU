@@ -99,6 +99,16 @@ class StateEstimator:
 
         self.z = np.array(measurements)
 
+        ########################################################
+        # Convert measured angles from degrees to radians
+        ########################################################
+
+        # Voltage angles
+        self.z[1::4] = np.deg2rad(self.z[1::4])
+
+        # Current angles
+        self.z[3::4] = np.deg2rad(self.z[3::4])
+
         return self.z
 
 
@@ -106,34 +116,51 @@ class StateEstimator:
     # Initial State
     ########################################################
 
+    # def initialize_state(self):
+    #     """
+    #     Initial State Estimate
+
+    #     x =
+
+    #     [
+    #         V1 θ1
+    #         V2 θ2
+    #         ...
+    #         VN θN
+    #     ]
+
+    #     Flat Start
+
+    #         Voltage Magnitude = 1.0 pu
+    #         Voltage Angle     = 0 deg
+    #     """
+
+    #     self.x = np.zeros(2 * NUM_BUSES)
+
+    #     for bus in range(NUM_BUSES):
+
+    #         self.x[2 * bus] = 1.0
+    #         self.x[2 * bus + 1] = 0.0
+
+    #     return self.x
     def initialize_state(self):
-        """
-        Initial State Estimate
 
-        x =
+        latest = self.df.iloc[-1]
 
-        [
-            V1 θ1
-            V2 θ2
-            ...
-            VN θN
-        ]
+        state = []
 
-        Flat Start
+        for bus in range(1, NUM_BUSES + 1):
 
-            Voltage Magnitude = 1.0 pu
-            Voltage Angle     = 0 deg
-        """
+            state.extend([
 
-        self.x = np.zeros(2 * NUM_BUSES)
+                latest[f"PMU{bus} Voltage Magnitude"],
+                np.deg2rad(latest[f"PMU{bus} Voltage Phase"])
 
-        for bus in range(NUM_BUSES):
+            ])
 
-            self.x[2 * bus] = 1.0
-            self.x[2 * bus + 1] = 0.0
+        self.x = np.array(state)
 
         return self.x
-
 
     ########################################################
     # Measurement Prediction
@@ -169,8 +196,10 @@ class StateEstimator:
 
             r = z - h(x)
         """
-        print("z shape :", self.z.shape)
-        print("h shape :", self.h.shape)
+
+        # print("\nInternal values (before residual):")
+        # print("z voltage angle =", self.z[1])
+        # print("h voltage angle =", self.h[1])
 
         self.residual = self.z - self.h
 
@@ -183,27 +212,59 @@ class StateEstimator:
 
     def summary(self):
 
+        # ----------------------------------------------------
+        # Create copies for display
+        # ----------------------------------------------------
+
+        z_print = self.z.copy()
+        h_print = self.h.copy()
+        r_print = self.residual.copy()
+        x_print = self.x.copy()
+
+        # ----------------------------------------------------
+        # Convert angles from radians to degrees
+        # (Display only)
+        # ----------------------------------------------------
+
+        # Measurement Vector
+        z_print[1::4] = np.rad2deg(z_print[1::4])
+        z_print[3::4] = np.rad2deg(z_print[3::4])
+
+        # Predicted Measurements
+        h_print[1::4] = np.rad2deg(h_print[1::4])
+        h_print[3::4] = np.rad2deg(h_print[3::4])
+
+        # Residual
+        r_print[1::4] = np.rad2deg(r_print[1::4])
+        r_print[3::4] = np.rad2deg(r_print[3::4])
+
+        # State Vector
+        x_print[1::2] = np.rad2deg(x_print[1::2])
+
+        # ----------------------------------------------------
+        # Display
+        # ----------------------------------------------------
+
         print("\n================================================")
         print(" Distribution System State Estimator")
         print("================================================")
 
         print("\nMeasurement Vector (z)\n")
-        print(self.z)
+        print(z_print)
 
         print("\nInitial State Vector (x0)\n")
-        print(self.x)
+        print(x_print)
 
         print("\nPredicted Measurement h(x)\n")
-        print(self.h)
+        print(h_print)
 
         print("\nResidual Vector r = z - h(x)\n")
-        print(self.residual)
+        print(r_print)
 
         print("\nMeasurement Dimension :", len(self.z))
         print("State Dimension       :", len(self.x))
 
         print("================================================")
-
 
     ########################################################
     # Main Flow
