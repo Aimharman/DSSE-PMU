@@ -2,63 +2,102 @@
 ===========================================================
 measurement_model.py
 
+Distribution System State Estimation
+Stage 3.2
+
 Measurement Model
 
-Implements
+Computes
 
-    z = h(x)
+        h(x)
 
-For Stage 3.2 we use the simplest possible PMU model.
+from the state vector
 
-State Vector
+        x = [V1 θ1 V2 θ2 ... VN θN]
 
-x =
+using
 
-[V1 θ1 V2 θ2 V3 θ3]
+        I = Ybus · V
 
-Measurement Vector
+The predicted measurement vector is
 
 h(x) =
 
-[V1 θ1 V2 θ2 V3 θ3]
+[
+Vmag1
+Vphase1
+Imag1
+Iphase1
 
-Later this can be replaced by a full power-system model.
+Vmag2
+Vphase2
+Imag2
+Iphase2
+
+...
+
+VmagN
+VphaseN
+ImagN
+IphaseN
+]
+
 ===========================================================
 """
 
 import numpy as np
 
-from network_model import NUM_BUSES
+from network_model import NUM_BUSES, YBUS
 
 
 def measurement_model(x):
-    """
-    Generic measurement model.
 
-    Input:
-        x = [V1 θ1 V2 θ2 ... VN θN]
+    ########################################################
+    # Convert State Vector to Complex Bus Voltages
+    ########################################################
 
-    Output:
-        h(x)
+    V = np.zeros(NUM_BUSES, dtype=complex)
 
-    Currently:
+    for bus in range(NUM_BUSES):
 
-        PMU Magnitude = Bus Voltage
-        PMU Phase     = Bus Angle
+        magnitude = x[2 * bus]
 
-    This will later be replaced by the network equations.
-    """
+        angle_deg = x[2 * bus + 1]
+
+        angle_rad = np.deg2rad(angle_deg)
+
+        V[bus] = magnitude * np.exp(1j * angle_rad)
+
+    ########################################################
+    # Compute Bus Currents
+    #
+    # I = Ybus · V
+    ########################################################
+
+    I = YBUS @ V
+
+    ########################################################
+    # Construct Predicted Measurement Vector
+    ########################################################
 
     h = []
 
     for bus in range(NUM_BUSES):
 
-        voltage = x[2 * bus]
+        ####################################################
+        # Voltage
+        ####################################################
 
-        angle = x[2 * bus + 1]
+        h.append(np.abs(V[bus]))
 
-        h.append(voltage)
+        h.append(np.degrees(np.angle(V[bus])))
 
-        h.append(angle)
+        ####################################################
+        # Current
+        ####################################################
+
+        h.append(np.abs(I[bus]))
+
+        h.append(np.degrees(np.angle(I[bus])))
 
     return np.array(h)

@@ -219,16 +219,16 @@ columns = [
 
     "Delta t (s)",
 
-    "Voltage 1 DFT Real",
-    "Voltage 1 DFT Imag",
-    "Voltage 1 DFT Magnitude",
-    "Voltage 1 DFT Phase (deg)",
-    "Voltage 1 DFT RMS",
-    "Current 1 DFT Real",
-    "Current 1 DFT Imag",
-    "Current 1 DFT Magnitude",
-    "Current 1 DFT Phase (deg)",
-    "Current 1 DFT RMS",
+    "PMU1 Voltage DFT Real",
+    "PMU1 Voltage DFT Imag",
+    "PMU1 Voltage Magnitude",
+    "PMU1 Voltage Phase",
+    "PMU1 Voltage DFT RMS",
+    "PMU1 Current DFT Real",
+    "PMU1 Current DFT Imag",
+    "PMU1 Current Magnitude",
+    "PMU1 Current Phase",
+    "PMU1 Current DFT RMS",
 
 # PMU1 Challenge Metadata
     "PMU1 Sync Offset",
@@ -238,16 +238,16 @@ columns = [
     "PMU1 Packet Loss",
     "PMU1 Bad Data",
 
-    "Voltage 2 DFT Real",
-    "Voltage 2 DFT Imag",
-    "Voltage 2 DFT Magnitude",
-    "Voltage 2 DFT Phase (deg)",
-    "Voltage 2 DFT RMS",
-    "Current 2 DFT Real",
-    "Current 2 DFT Imag",
-    "Current 2 DFT Magnitude",
-    "Current 2 DFT Phase (deg)",
-    "Current 2 DFT RMS",
+    "PMU2 Voltage DFT Real",
+    "PMU2 Voltage DFT Imag",
+    "PMU2 Voltage Magnitude",
+    "PMU2 Voltage Phase",
+    "PMU2 Voltage DFT RMS",
+    "PMU2 Current DFT Real",
+    "PMU2 Current DFT Imag",
+    "PMU2 Current Magnitude",
+    "PMU2 Current Phase",
+    "PMU2 Current DFT RMS",
 
 
     "PMU2 Sync Offset",
@@ -257,18 +257,18 @@ columns = [
     "PMU2 Packet Loss",
     "PMU2 Bad Data",
 
-    "Voltage 3 DFT Real",
-    "Voltage 3 DFT Imag",
-    "Voltage 3 DFT Magnitude",
-    "Voltage 3 DFT Phase (deg)",
-    "Voltage 3 DFT RMS",
-    "Current 3 DFT Real",
-    "Current 3 DFT Imag",
-    "Current 3 DFT Magnitude",
-    "Current 3 DFT Phase (deg)",
-    "Current 3 DFT RMS",
+    "PMU3 Voltage DFT Real",
+    "PMU3 Voltage DFT Imag",
+    "PMU3 Voltage Magnitude",
+    "PMU3 Voltage Phase",
+    "PMU3 Voltage DFT RMS",
+    "PMU3 Current DFT Real",
+    "PMU3 Current DFT Imag",
+    "PMU3 Current Magnitude",
+    "PMU3 Current Phase",
+    "PMU3 Current DFT RMS",
 
-    
+
     "PMU3 Sync Offset",
     "PMU3 Mag Noise",
     "PMU3 Phase Noise",
@@ -981,6 +981,18 @@ def update():
         current_dft_mag3.append(mag3)
         current_dft_phase3.append(phase3)
 
+    ####################################################
+    # Convert PMU measurements to per-unit
+    ####################################################
+
+    v_mag1_pu = v_mag1 / VOLTAGE_AMPLITUDE
+    v_mag2_pu = v_mag2 / VOLTAGE_AMPLITUDE
+    v_mag3_pu = v_mag3 / VOLTAGE_AMPLITUDE
+
+    i_mag1_pu = mag1 / CURRENT_AMPLITUDE
+    i_mag2_pu = mag2 / CURRENT_AMPLITUDE
+    i_mag3_pu = mag3 / CURRENT_AMPLITUDE
+
     # ---------------------------------------------------------------
     # CSV Data Storage
     # ---------------------------------------------------------------
@@ -997,24 +1009,24 @@ def update():
         CURRENT_AMPLITUDE,      # Reference amplitude
         signal_angle,           # Theoretical angle
         delta_t,                # Time step
-        v_real1, v_imag1, v_mag1, v_phase1, v_rms1,     # DFT results for Signal 1
-        real1, imag1, mag1, phase1, rms1,               # DFT results for Signal 1
+        v_real1, v_imag1, v_mag1_pu, v_phase1, v_rms1,     # DFT results for Signal 1
+        real1, imag1, i_mag1_pu, phase1, rms1,               # DFT results for Signal 1
         meta1["sync_error"],
         meta1["mag_noise"],
         meta1["phase_noise"],
         meta1["clock_drift"],
         meta1["packet_loss"],
         meta1["bad_data"],
-        v_real2, v_imag2, v_mag2, v_phase2, v_rms2,     # DFT results for Signal 2
-        real2, imag2, mag2, phase2, rms2,  # DFT results for Signal 2
+        v_real2, v_imag2, v_mag2_pu, v_phase2, v_rms2,     # DFT results for Signal 2
+        real2, imag2, i_mag2_pu, phase2, rms2,  # DFT results for Signal 2
         meta2["sync_error"],
         meta2["mag_noise"],
         meta2["phase_noise"],
         meta2["clock_drift"],
         meta2["packet_loss"],
         meta2["bad_data"],
-        v_real3, v_imag3, v_mag3, v_phase3, v_rms3,     # DFT results for Signal 3
-        real3, imag3, mag3, phase3, rms3,   # DFT results for Signal 3
+        v_real3, v_imag3, v_mag3_pu, v_phase3, v_rms3,     # DFT results for Signal 3
+        real3, imag3, i_mag3_pu, phase3, rms3,   # DFT results for Signal 3
         meta3["sync_error"],
         meta3["mag_noise"],
         meta3["phase_noise"],
