@@ -193,4 +193,4 @@ class WeightedLeastSquares:
 
         print(x)
 
-        return x
+        return (x,r,W)

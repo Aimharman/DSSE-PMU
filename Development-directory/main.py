@@ -21,6 +21,7 @@ Initial State Vector (x0)
 
 from state_estimator import StateEstimator
 from wls import WeightedLeastSquares
+from chi_square import ChiSquareDetector
 
 ###########################################################################
 # CONFIGURATION
@@ -55,18 +56,30 @@ def main():
 
     solver = WeightedLeastSquares()
 
-    x_final = solver.solve(
+    x_final, residual, W = solver.solve(
 
         estimator.z,
         estimator.x
 
-    )
-
+ )
 
     print("\nEstimated State")
 
     print(x_final)
 
+    detector = ChiSquareDetector()
+
+    bad_data, J, threshold = detector.detect(
+
+    residual,
+
+    W,
+
+    len(estimator.z),
+
+    len(x_final)
+
+   )
 
 ###########################################################################
 
