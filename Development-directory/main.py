@@ -74,7 +74,7 @@ def run_estimation(csv_file, apply_sync_correction=False, perform_localization=T
         len(x_final),
     )
 
-    if perform_localization:
+    if bad_data and perform_localization:
         index, label, score = detector.localize_bad_data(
             residual,
             W,
@@ -85,20 +85,19 @@ def run_estimation(csv_file, apply_sync_correction=False, perform_localization=T
         print(f"Label : {label}")
         print(f"Score : {score:.6f}")
 
-        if bad_data:
-            print("\nRe-running WLS after down-weighting the suspicious measurement...")
-            x_final, residual, W = solver.solve(
-                estimator.z,
-                estimator.x,
-                bad_data_index=index,
-                bad_data_weight=0.1,
-            )
-            bad_data, J, threshold = detector.detect(
-                residual,
-                W,
-                len(estimator.z),
-                len(x_final),
-            )
+        print("\nRe-running WLS after down-weighting the suspicious measurement...")
+        x_final, residual, W = solver.solve(
+            estimator.z,
+            x_final,
+            bad_data_index=index,
+            bad_data_weight=0.1,
+        )
+        bad_data, J, threshold = detector.detect(
+            residual,
+            W,
+            len(estimator.z),
+            len(x_final),
+        )
 
     return {
         "state": x_final,

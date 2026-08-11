@@ -76,13 +76,15 @@ class ChiSquareDetector:
 
     def localize_bad_data(self, residual, W, measurement_names=None):
         """
-        Identify the most suspicious measurement using a simple
-        normalized-residual score.
+        Identify the most suspicious measurement using a simplified
+        residual-based heuristic.
 
         For a diagonal weight matrix, the score is
 
             score_i = |r_i| * sqrt(W_ii)
 
+        This is a simplified normalized-residual heuristic and is not
+        the full statistically rigorous normalized residual test.
         Larger scores indicate measurements that are less consistent
         with the current estimate.
         """

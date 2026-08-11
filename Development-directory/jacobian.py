@@ -43,10 +43,9 @@ from measurement_model import (
 def compute_jacobian(x):
 
     """
-    Returns the analytical Jacobian matrix.
-
-    Current Stage:
-        Voltage measurement rows only.
+    Returns the analytical Jacobian matrix for the full
+    measurement vector, including voltage magnitudes,
+    voltage angles, current magnitudes, and current angles.
     """
 
     H = np.zeros((4 * NUM_BUSES, 2 * NUM_BUSES))

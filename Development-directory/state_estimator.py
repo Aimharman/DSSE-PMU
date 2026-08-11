@@ -11,8 +11,9 @@ constructs
 3. Predicted Measurement Vector h(x)
 4. Residual Vector r = z - h(x)
 
-The WLS solver, Jacobian, Gain Matrix and Chi-Square
-Bad Data Detection will be added in subsequent stages.
+The implementation now includes iterative WLS estimation,
+analytical Jacobian computation, and chi-square-based
+validation.
 
 ===========================================================
 """
@@ -141,7 +142,7 @@ class StateEstimator:
     # Initial State
     ########################################################
 
-    def initialize_state(self):
+    def initialize_state(self, apply_sync_correction=False):
 
         latest = self.df.iloc[-1]
 
@@ -149,9 +150,17 @@ class StateEstimator:
 
         for bus in range(1, NUM_BUSES + 1):
 
+            voltage_phase = latest[f"PMU{bus} Voltage Phase"]
+
+            if apply_sync_correction:
+                offset = latest.get(f"PMU{bus} Sync Offset", 0.0)
+                if pd.isna(offset):
+                    offset = 0.0
+                voltage_phase = voltage_phase - offset
+
             state.extend([
                 latest[f"PMU{bus} Voltage Magnitude"],
-                np.deg2rad(latest[f"PMU{bus} Voltage Phase"]),
+                np.deg2rad(voltage_phase),
             ])
 
         self.x = np.array(state)
@@ -249,7 +258,7 @@ class StateEstimator:
         self.build_measurement_vector(apply_sync_correction=apply_sync_correction)
 
         print("Initializing state vector...")
-        self.initialize_state()
+        self.initialize_state(apply_sync_correction=apply_sync_correction)
 
         print("Predicting measurements...")
         self.predict_measurements()
