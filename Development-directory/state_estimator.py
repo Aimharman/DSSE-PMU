@@ -49,12 +49,17 @@ class StateEstimator:
         # Residual
         self.residual = None
 
+        # Measurement labels for localization
+        self.measurement_names = []
+
+        # Synchronization offsets used for the current run
+        self.sync_offsets_used = {}
 
     ########################################################
     # Measurement Vector
     ########################################################
 
-    def build_measurement_vector(self):
+    def build_measurement_vector(self, apply_sync_correction=False):
         """
         Construct the measurement vector from the latest PMU
         snapshot.
@@ -84,20 +89,41 @@ class StateEstimator:
         latest = self.df.iloc[-1]
 
         measurements = []
+        self.measurement_names = []
+        self.sync_offsets_used = {}
 
         for bus in range(1, NUM_BUSES + 1):
 
+            voltage_magnitude = latest[f"PMU{bus} Voltage Magnitude"]
+            voltage_phase = latest[f"PMU{bus} Voltage Phase"]
+            current_magnitude = latest[f"PMU{bus} Current Magnitude"]
+            current_phase = latest[f"PMU{bus} Current Phase"]
+
+            offset = 0.0
+            if apply_sync_correction:
+                offset = latest.get(f"PMU{bus} Sync Offset", 0.0)
+                if pd.isna(offset):
+                    offset = 0.0
+                voltage_phase = voltage_phase - offset
+                current_phase = current_phase - offset
+
+            self.sync_offsets_used[f"PMU{bus}"] = float(offset)
+
             measurements.extend([
-
-                latest[f"PMU{bus} Voltage Magnitude"],
-                latest[f"PMU{bus} Voltage Phase"],
-
-                latest[f"PMU{bus} Current Magnitude"],
-                latest[f"PMU{bus} Current Phase"]
-
+                voltage_magnitude,
+                voltage_phase,
+                current_magnitude,
+                current_phase,
             ])
 
-        self.z = np.array(measurements)
+            self.measurement_names.extend([
+                f"PMU{bus} Voltage Magnitude",
+                f"PMU{bus} Voltage Phase",
+                f"PMU{bus} Current Magnitude",
+                f"PMU{bus} Current Phase",
+            ])
+
+        self.z = np.array(measurements, dtype=float)
 
         ########################################################
         # Convert measured angles from degrees to radians
@@ -111,38 +137,10 @@ class StateEstimator:
 
         return self.z
 
-
     ########################################################
     # Initial State
     ########################################################
 
-    # def initialize_state(self):
-    #     """
-    #     Initial State Estimate
-
-    #     x =
-
-    #     [
-    #         V1 θ1
-    #         V2 θ2
-    #         ...
-    #         VN θN
-    #     ]
-
-    #     Flat Start
-
-    #         Voltage Magnitude = 1.0 pu
-    #         Voltage Angle     = 0 deg
-    #     """
-
-    #     self.x = np.zeros(2 * NUM_BUSES)
-
-    #     for bus in range(NUM_BUSES):
-
-    #         self.x[2 * bus] = 1.0
-    #         self.x[2 * bus + 1] = 0.0
-
-    #     return self.x
     def initialize_state(self):
 
         latest = self.df.iloc[-1]
@@ -152,10 +150,8 @@ class StateEstimator:
         for bus in range(1, NUM_BUSES + 1):
 
             state.extend([
-
                 latest[f"PMU{bus} Voltage Magnitude"],
-                np.deg2rad(latest[f"PMU{bus} Voltage Phase"])
-
+                np.deg2rad(latest[f"PMU{bus} Voltage Phase"]),
             ])
 
         self.x = np.array(state)
@@ -185,7 +181,6 @@ class StateEstimator:
 
         return self.h
 
-
     ########################################################
     # Residual
     ########################################################
@@ -197,14 +192,9 @@ class StateEstimator:
             r = z - h(x)
         """
 
-        # print("\nInternal values (before residual):")
-        # print("z voltage angle =", self.z[1])
-        # print("h voltage angle =", self.h[1])
-
         self.residual = self.z - self.h
 
         return self.residual
-
 
     ########################################################
     # Summary
@@ -212,38 +202,21 @@ class StateEstimator:
 
     def summary(self):
 
-        # ----------------------------------------------------
-        # Create copies for display
-        # ----------------------------------------------------
-
         z_print = self.z.copy()
         h_print = self.h.copy()
         r_print = self.residual.copy()
         x_print = self.x.copy()
 
-        # ----------------------------------------------------
-        # Convert angles from radians to degrees
-        # (Display only)
-        # ----------------------------------------------------
-
-        # Measurement Vector
         z_print[1::4] = np.rad2deg(z_print[1::4])
         z_print[3::4] = np.rad2deg(z_print[3::4])
 
-        # Predicted Measurements
         h_print[1::4] = np.rad2deg(h_print[1::4])
         h_print[3::4] = np.rad2deg(h_print[3::4])
 
-        # Residual
         r_print[1::4] = np.rad2deg(r_print[1::4])
         r_print[3::4] = np.rad2deg(r_print[3::4])
 
-        # State Vector
         x_print[1::2] = np.rad2deg(x_print[1::2])
-
-        # ----------------------------------------------------
-        # Display
-        # ----------------------------------------------------
 
         print("\n================================================")
         print(" Distribution System State Estimator")
@@ -270,10 +243,10 @@ class StateEstimator:
     # Main Flow
     ########################################################
 
-    def run(self):
+    def run(self, apply_sync_correction=False):
 
         print("\nBuilding measurement vector...")
-        self.build_measurement_vector()
+        self.build_measurement_vector(apply_sync_correction=apply_sync_correction)
 
         print("Initializing state vector...")
         self.initialize_state()

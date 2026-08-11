@@ -71,6 +71,42 @@ class ChiSquareDetector:
         return chi2.ppf(self.confidence, dof)
 
     ########################################################
+    # Bad-Data Localization
+    ########################################################
+
+    def localize_bad_data(self, residual, W, measurement_names=None):
+        """
+        Identify the most suspicious measurement using a simple
+        normalized-residual score.
+
+        For a diagonal weight matrix, the score is
+
+            score_i = |r_i| * sqrt(W_ii)
+
+        Larger scores indicate measurements that are less consistent
+        with the current estimate.
+        """
+
+        residual = np.asarray(residual, dtype=float).reshape(-1)
+
+        if W.ndim == 2:
+            diag_weights = np.diag(W)
+        else:
+            diag_weights = np.asarray(W, dtype=float).reshape(-1)
+
+        diag_weights = np.maximum(np.abs(diag_weights), 1e-12)
+        scores = np.abs(residual) * np.sqrt(diag_weights)
+
+        index = int(np.argmax(scores))
+        label = (
+            measurement_names[index]
+            if measurement_names is not None and len(measurement_names) > index
+            else f"measurement_{index + 1}"
+        )
+
+        return index, label, float(scores[index])
+
+    ########################################################
     # Detection
     ########################################################
 

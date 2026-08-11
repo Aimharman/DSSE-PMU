@@ -2,26 +2,6 @@
 ===========================================================
 wls.py
 
-Weighted Least Squares (WLS)
-
-Stage 3.4
-
-Performs one Gauss-Newton WLS iteration.
-
-Implements
-
-    r = z - h(x)
-
-    G = HᵀWH
-
-    g = HᵀWr
-
-===========================================================
-"""
-"""
-===========================================================
-wls.py
-
 Weighted Least Squares Solver
 
 Implements the complete iterative
@@ -35,21 +15,20 @@ import numpy as np
 from measurement_model import measurement_model
 from jacobian import compute_jacobian
 from network_model import NUM_BUSES
-
 from measurement_model import (
-    measurement_model,
     state_to_voltage,
-    compute_currents
+    compute_currents,
 )
 
 max_iterations = 250
 tolerance = 1e-6
 
+
 class WeightedLeastSquares:
 
     def __init__(self,
-                 tolerance = tolerance,
-                 max_iterations = max_iterations):
+                 tolerance=tolerance,
+                 max_iterations=max_iterations):
 
         self.tolerance = tolerance
         self.max_iterations = max_iterations
@@ -58,7 +37,7 @@ class WeightedLeastSquares:
     # Solve WLS
     ########################################################
 
-    def solve(self, z, x0):
+    def solve(self, z, x0, bad_data_index=None, bad_data_weight=0.1):
 
         x = x0.copy()
 
@@ -66,25 +45,25 @@ class WeightedLeastSquares:
         # Covariance Matrix
         ####################################################
 
-        #R = np.eye(len(z))
         R = np.diag([
             1e-4, 1e-4, 1e-2, 1e-2,
             1e-4, 1e-4, 1e-2, 1e-2,
             1e-4, 1e-4, 1e-2, 1e-2
         ])
-        ####################################################
-        # Weight Matrix
-        ####################################################
 
-        W = np.linalg.inv(R)
+        W0 = np.linalg.inv(R)
+        base_diag = np.diag(W0)
 
         print("\n==============================================")
         print(" Weighted Least Squares")
         print("==============================================")
 
+        if bad_data_index is not None:
+            print(f"Down-weighting measurement index {bad_data_index} with factor {bad_data_weight:.3f}")
+
         for iteration in range(self.max_iterations):
 
-            print(f"\nIteration {iteration+1}")
+            print(f"\nIteration {iteration + 1}")
 
             ################################################
             # Measurement Prediction
@@ -105,6 +84,15 @@ class WeightedLeastSquares:
             H = compute_jacobian(x)
 
             ################################################
+            # Weight Matrix
+            ################################################
+
+            weights = np.ones(len(z))
+            if bad_data_index is not None:
+                weights[bad_data_index] = bad_data_weight ** 2
+            W = np.diag(base_diag * weights)
+
+            ################################################
             # Gain Matrix
             ################################################
 
@@ -121,14 +109,10 @@ class WeightedLeastSquares:
             ################################################
 
             try:
-
                 dx = np.linalg.solve(G, g)
-
             except np.linalg.LinAlgError:
-
                 print("Gain matrix is singular.")
-
-                return x
+                return x, r, W
 
             ################################################
             # Update State
@@ -141,11 +125,9 @@ class WeightedLeastSquares:
             ################################################
 
             print("\nResidual Norm")
-
             print(np.linalg.norm(r))
 
             print("\nCorrection Norm")
-
             print(np.linalg.norm(dx))
 
             ################################################
@@ -153,9 +135,7 @@ class WeightedLeastSquares:
             ################################################
 
             if np.linalg.norm(dx) < self.tolerance:
-
                 print("\nConverged.")
-
                 break
 
         ########################################################
@@ -180,17 +160,16 @@ class WeightedLeastSquares:
             predicted_mag = np.abs(I[bus])
             predicted_ang = np.degrees(np.angle(I[bus]))
 
-            print(f"\nBus {bus+1}")
-
+            print(f"\nBus {bus + 1}")
             print(f"Measured Current Magnitude  : {measured_mag:.6f}")
             print(f"Predicted Current Magnitude : {predicted_mag:.6f}")
-
             print(f"Measured Current Angle      : {measured_ang:.6f} deg")
             print(f"Predicted Current Angle     : {predicted_ang:.6f} deg")
+
         print("\n==============================================")
         print(" Final Estimated State")
         print("==============================================")
 
         print(x)
 
-        return (x,r,W)
+        return (x, r, W)

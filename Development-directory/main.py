@@ -19,31 +19,33 @@ Initial State Vector (x0)
 ===========================================================
 """
 
+import os
+import numpy as np
+
 from state_estimator import StateEstimator
 from wls import WeightedLeastSquares
 from chi_square import ChiSquareDetector
+from jacobian import compute_jacobian
 
 ###########################################################################
 # CONFIGURATION
 ###########################################################################
 
-CSV_FILE = "PMU_Output.csv"
+CSV_FILE = os.path.join(os.path.dirname(__file__), "PMU_Output.csv")
 
 ###########################################################################
 # MAIN
 ###########################################################################
 
-def main():
+
+def run_estimation(csv_file, apply_sync_correction=False, perform_localization=True):
 
     print("==============================================")
     print(" Distribution System State Estimator")
     print("==============================================")
 
-    estimator = StateEstimator(CSV_FILE)
-
-    estimator.run()
-
-    from jacobian import compute_jacobian
+    estimator = StateEstimator(csv_file)
+    estimator.run(apply_sync_correction=apply_sync_correction)
 
     H = compute_jacobian(estimator.x)
 
@@ -57,31 +59,90 @@ def main():
     solver = WeightedLeastSquares()
 
     x_final, residual, W = solver.solve(
-
         estimator.z,
-        estimator.x
-
- )
+        estimator.x,
+    )
 
     print("\nEstimated State")
-
     print(x_final)
 
     detector = ChiSquareDetector()
-
     bad_data, J, threshold = detector.detect(
+        residual,
+        W,
+        len(estimator.z),
+        len(x_final),
+    )
 
-    residual,
+    if perform_localization:
+        index, label, score = detector.localize_bad_data(
+            residual,
+            W,
+            estimator.measurement_names,
+        )
+        print("\nMost Suspicious Measurement")
+        print(f"Index : {index}")
+        print(f"Label : {label}")
+        print(f"Score : {score:.6f}")
 
-    W,
+        if bad_data:
+            print("\nRe-running WLS after down-weighting the suspicious measurement...")
+            x_final, residual, W = solver.solve(
+                estimator.z,
+                estimator.x,
+                bad_data_index=index,
+                bad_data_weight=0.1,
+            )
+            bad_data, J, threshold = detector.detect(
+                residual,
+                W,
+                len(estimator.z),
+                len(x_final),
+            )
 
-    len(estimator.z),
+    return {
+        "state": x_final,
+        "residual": residual,
+        "weight_matrix": W,
+        "bad_data": bad_data,
+        "chi_square_statistic": J,
+        "threshold": threshold,
+        "sync_correction": apply_sync_correction,
+        "sync_offsets": estimator.sync_offsets_used,
+    }
 
-    len(x_final)
 
-   )
+def run_comparison(csv_file):
+    print("\n==============================================")
+    print(" Synchronization Comparison Study")
+    print("==============================================")
 
-###########################################################################
+    baseline = run_estimation(csv_file, apply_sync_correction=False)
+    corrected = run_estimation(csv_file, apply_sync_correction=True)
+
+    baseline_state = np.asarray(baseline["state"], dtype=float)
+    corrected_state = np.asarray(corrected["state"], dtype=float)
+
+    state_difference = np.linalg.norm(corrected_state - baseline_state)
+
+    print("\nComparison Summary")
+    print("------------------")
+    print(f"State difference norm : {state_difference:.6f}")
+    print(f"Baseline chi-square  : {baseline['chi_square_statistic']:.6f}")
+    print(f"Corrected chi-square : {corrected['chi_square_statistic']:.6f}")
+    print(f"Baseline threshold   : {baseline['threshold']:.6f}")
+    print(f"Corrected threshold  : {corrected['threshold']:.6f}")
+
+    return {
+        "baseline": baseline,
+        "corrected": corrected,
+        "state_difference": state_difference,
+    }
+
+
+def main():
+    run_comparison(CSV_FILE)
+
 
 if __name__ == "__main__":
     main()
