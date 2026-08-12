@@ -70,7 +70,7 @@ def run_estimation(csv_file, apply_sync_correction=False, perform_localization=T
     print(x_final)
 
     detector = ChiSquareDetector()
-    bad_data, J, threshold = detector.detect(
+    initial_bad_data, initial_J, initial_threshold = detector.detect(
         residual,
         W,
         len(estimator.z),
@@ -78,23 +78,26 @@ def run_estimation(csv_file, apply_sync_correction=False, perform_localization=T
     )
 
     faulty_pmu = []
-    if bad_data and perform_localization:
-        index, label, score = detector.localize_bad_data(
+    if initial_bad_data and perform_localization:
+        pmu_name, pmu_indices, pmu_score = detector.localize_faulty_pmu(
             residual,
             W,
             estimator.measurement_names,
         )
-        print("\nMost Suspicious Measurement")
-        print(f"Index : {index}")
-        print(f"Label : {label}")
-        print(f"Score : {score:.6f}")
+        print("\n==============================================")
+        print(" Faulty PMU Localization")
+        print("==============================================")
+        print(f"Detected PMU      : {pmu_name}")
+        print(f"Affected indices : {pmu_indices}")
+        print(f"PMU score        : {pmu_score:.6f}")
+        print("==============================================")
 
-        print("\nRe-running WLS after down-weighting the suspicious measurement...")
+        print("\nRe-running WLS after removing the faulty PMU measurements...")
         x_final, residual, W = solver.solve(
             estimator.z,
             x_final,
-            bad_data_index=index,
-            bad_data_weight=0.1,
+            bad_data_indices=pmu_indices,
+            bad_data_weight=0.0,
         )
         bad_data, J, threshold = detector.detect(
             residual,
@@ -103,6 +106,26 @@ def run_estimation(csv_file, apply_sync_correction=False, perform_localization=T
             len(x_final),
         )
 
+        print("\n==============================================")
+        print(" Project Result Summary")
+        print("==============================================")
+        print("Cyber Resilient PDC Automation Technique")
+        print("for Faulty PMU Detection")
+        print("----------------------------------------------")
+        print(f"Faulty PMU identified        : {pmu_name}")
+        print(f"Measurements removed        : {pmu_indices}")
+        print(f"Initial chi-square statistic: {initial_J:.6f}")
+        print(f"Initial threshold           : {initial_threshold:.6f}")
+        print(f"Initial status              : {'FAILED' if initial_bad_data else 'PASSED'}")
+        print(f"Corrected chi-square        : {J:.6f}")
+        print(f"Corrected threshold         : {threshold:.6f}")
+        print(f"Final status                : {'PASSED' if not bad_data else 'FAILED'}")
+        print("==============================================")
+    else:
+        bad_data = initial_bad_data
+        J = initial_J
+        threshold = initial_threshold
+
     if perform_localization:
         faulty_pmu = detect_faulty_pmu_history(
             csv_file,
@@ -110,9 +133,12 @@ def run_estimation(csv_file, apply_sync_correction=False, perform_localization=T
             threshold=0.5,
         )
         if faulty_pmu:
-            print("\nSuspected Faulty PMUs")
+            print("\n==============================================")
+            print(" Rolling-Window PMU Review")
+            print("==============================================")
             for item in faulty_pmu:
                 print(item)
+            print("==============================================")
 
             suspected_pmu = faulty_pmu[0]["pmu"]
             suspected_index = int(suspected_pmu.replace("PMU", "")) - 1
@@ -123,7 +149,7 @@ def run_estimation(csv_file, apply_sync_correction=False, perform_localization=T
                 estimator.z,
                 x_final,
                 bad_data_indices=pmu_indices,
-                bad_data_weight=0.05,
+                bad_data_weight=0.0,
             )
             bad_data, J, threshold = detector.detect(
                 residual,

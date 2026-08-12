@@ -16,6 +16,8 @@ Chi-square threshold.
 ===========================================================
 """
 
+import re
+
 import numpy as np
 
 from scipy.stats import chi2
@@ -107,6 +109,50 @@ class ChiSquareDetector:
         )
 
         return index, label, float(scores[index])
+
+    def localize_faulty_pmu(self, residual, W, measurement_names=None):
+        """
+        Group measurements by PMU and identify the PMU whose aggregated
+        weighted residual contribution is largest.
+
+        This is the correct strategy for correlated PMU faults, where a
+        single faulty PMU may affect several measurements simultaneously.
+        """
+
+        residual = np.asarray(residual, dtype=float).reshape(-1)
+
+        if measurement_names is None:
+            measurement_names = [f"measurement_{idx + 1}" for idx in range(len(residual))]
+
+        if W.ndim == 2:
+            diag_weights = np.diag(W)
+        else:
+            diag_weights = np.asarray(W, dtype=float).reshape(-1)
+
+        diag_weights = np.maximum(np.abs(diag_weights), 1e-12)
+        weighted_scores = np.abs(residual) * np.sqrt(diag_weights)
+
+        pmu_totals = {}
+        pmu_indices = {}
+
+        for idx, name in enumerate(measurement_names):
+            match = re.search(r"PMU\s*\d+", str(name), flags=re.IGNORECASE)
+            if match:
+                pmu_label = match.group(0).upper().replace(" ", "")
+            else:
+                pmu_label = str(name).split()[0]
+
+            if pmu_label not in pmu_totals:
+                pmu_totals[pmu_label] = 0.0
+                pmu_indices[pmu_label] = []
+            pmu_totals[pmu_label] += float(weighted_scores[idx])
+            pmu_indices[pmu_label].append(idx)
+
+        faulty_pmu = max(pmu_totals.items(), key=lambda item: item[1])[0]
+        score = float(pmu_totals[faulty_pmu])
+        indices = pmu_indices[faulty_pmu]
+
+        return faulty_pmu, indices, score
 
     ########################################################
     # PMU-Level Faulty Detection

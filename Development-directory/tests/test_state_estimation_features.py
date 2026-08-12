@@ -58,6 +58,39 @@ class TestStateEstimationFeatures(unittest.TestCase):
         self.assertEqual(result[0]["pmu"], "PMU3")
         self.assertGreater(result[0]["score"], 0.5)
 
+    def test_faulty_pmu_grouping_identifies_pmu_from_single_residual_vector(self):
+        detector = ChiSquareDetector()
+        residual = np.array([
+            0.1, 0.05, 0.2, 0.1,
+            0.2, 0.1, 0.3, 0.2,
+            2.5, 3.2, 2.8, 2.1,
+        ])
+        W = np.diag(np.ones(len(residual)))
+        measurement_names = [
+            "PMU1 Voltage Magnitude",
+            "PMU1 Voltage Phase",
+            "PMU1 Current Magnitude",
+            "PMU1 Current Phase",
+            "PMU2 Voltage Magnitude",
+            "PMU2 Voltage Phase",
+            "PMU2 Current Magnitude",
+            "PMU2 Current Phase",
+            "PMU3 Voltage Magnitude",
+            "PMU3 Voltage Phase",
+            "PMU3 Current Magnitude",
+            "PMU3 Current Phase",
+        ]
+
+        pmu_name, pmu_indices, score = detector.localize_faulty_pmu(
+            residual,
+            W,
+            measurement_names,
+        )
+
+        self.assertEqual(pmu_name, "PMU3")
+        self.assertEqual(pmu_indices, [8, 9, 10, 11])
+        self.assertGreater(score, 0.0)
+
 
 if __name__ == "__main__":
     unittest.main()
