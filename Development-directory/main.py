@@ -31,7 +31,8 @@ from jacobian import compute_jacobian
 # CONFIGURATION
 ###########################################################################
 
-CSV_FILE = os.path.join(os.path.dirname(__file__), "PMU_Output.csv")
+#CSV_FILE = os.path.join(os.path.dirname(__file__), "PMU_Output.csv")
+CSV_FILE = os.path.join(os.path.dirname(__file__), "PMU_Output_Faulty_PMU3_60deg.csv")
 
 ###########################################################################
 # MAIN

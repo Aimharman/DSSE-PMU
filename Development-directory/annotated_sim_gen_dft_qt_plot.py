@@ -47,7 +47,7 @@ PRINT_SYNC_OFFSETS = True
 FREQUENCY = 50                 # Hz
 ODR = 1000                     # Samples/sec
 #AMPLITUDE = 10                 # Peak Current
-SIMULATION_TIME = 0.5           # seconds
+SIMULATION_TIME = 10.0           # seconds
 DISPLAY_WINDOW = 0.10          # seconds displayed on screen
 
 ###########################################################################
