@@ -40,6 +40,24 @@ class TestStateEstimationFeatures(unittest.TestCase):
 
         self.assertFalse(np.allclose(raw_vector, corrected_vector))
 
+    def test_faulty_pmu_detection_identifies_suspicious_pmu(self):
+        detector = ChiSquareDetector()
+        residual_history = np.array([
+            [0.1, 0.0, 0.1, 0.0, 0.2, 0.0, 0.2, 0.0, 1.0, 0.2, 1.2, 0.3],
+            [0.2, 0.0, 0.2, 0.0, 0.3, 0.0, 0.3, 0.0, 1.2, 0.3, 1.3, 0.2],
+            [0.1, 0.0, 0.1, 0.0, 0.2, 0.0, 0.2, 0.0, 1.5, 0.2, 1.0, 0.1],
+        ])
+
+        result = detector.detect_faulty_pmu(
+            residual_history,
+            pmu_names=["PMU1", "PMU2", "PMU3"],
+            window_size=3,
+            threshold=0.5,
+        )
+
+        self.assertEqual(result[0]["pmu"], "PMU3")
+        self.assertGreater(result[0]["score"], 0.5)
+
 
 if __name__ == "__main__":
     unittest.main()

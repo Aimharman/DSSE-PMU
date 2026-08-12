@@ -70,7 +70,7 @@ LINE_RESISTANCE = 0.30      # Ohm
 ENABLE_SYNC_ERROR = True
 ENABLE_MEASUREMENT_NOISE = True
 ENABLE_CLOCK_DRIFT = True
-ENABLE_PACKET_LOSS = True
+ENABLE_PACKET_LOSS = False
 ENABLE_BAD_DATA = True
 
 ###########################################################################
@@ -119,12 +119,23 @@ PACKET_LOSS_PROB = 0.02      # 2%
 # Injection mode:
 # "periodic" -> deterministic injection every BAD_DATA_INTERVAL samples
 # "random"   -> probabilistic injection using BAD_DATA_PROB
+# "faulty_pmu" -> injects bad data only for a specific PMU (BAD_PMU)
 
-BAD_DATA_MODE = "periodic"
+BAD_DATA_MODE = "faulty_pmu"  # Options: "periodic", "random", "faulty_pmu"
+
+#-----For periodic & random mode-----
 BAD_DATA_INTERVAL = 500      # samples
 BAD_DATA_PROB = 0.01         # used only in random mode
 BAD_PHASE_ERROR = 20.0       # degrees
 BAD_MAG_SCALE = 1.20         # +20%
+
+#-----For faulty_pmu mode----- 
+FAULTY_PMU = 3
+FAULT_START_TIME = 2.0
+FAULT_END_TIME = 6.0
+FAULT_PHASE_ERROR = 20.0
+FAULT_MAG_SCALE = 1.20
+
 
 
 ###########################################################################
@@ -672,9 +683,31 @@ def apply_measurement_challenges(mag,phase,t,sync_offset,sample_index,pmu_id):
         inject_bad_data = False
 
         # ------------------------------------------------
+        # Faulty PMU Injection
+        # ------------------------------------------------
+
+        if BAD_DATA_MODE.lower() == "faulty_pmu":
+
+            if (
+                FAULT_START_TIME <= t < FAULT_END_TIME
+                and pmu_id == FAULTY_PMU
+            ):
+
+                metadata["bad_data"] = True
+
+                measured_phase += FAULT_PHASE_ERROR
+                measured_mag *= FAULT_MAG_SCALE
+
+                if PRINT_BAD_DATA:
+                    print(
+                        f"[Sample {sample_index}] "
+                        f"FAULTY PMU {FAULTY_PMU}"
+                    )
+
+        # ------------------------------------------------
         # Periodic Injection
         # ------------------------------------------------
-        if BAD_DATA_MODE.lower() == "periodic":
+        elif BAD_DATA_MODE.lower() == "periodic":
 
             if (
                 sample_index != 0 and

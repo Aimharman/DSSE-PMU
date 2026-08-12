@@ -37,9 +37,18 @@ class WeightedLeastSquares:
     # Solve WLS
     ########################################################
 
-    def solve(self, z, x0, bad_data_index=None, bad_data_weight=0.1):
+    def solve(self, z, x0, bad_data_index=None, bad_data_indices=None, bad_data_weight=0.1):
 
         x = x0.copy()
+
+        if bad_data_indices is not None and bad_data_index is not None:
+            bad_data_indices = list(bad_data_indices) + [bad_data_index]
+        elif bad_data_index is not None:
+            bad_data_indices = [bad_data_index]
+        elif bad_data_indices is None:
+            bad_data_indices = []
+        else:
+            bad_data_indices = list(bad_data_indices)
 
         ####################################################
         # Covariance Matrix
@@ -58,8 +67,8 @@ class WeightedLeastSquares:
         print(" Weighted Least Squares")
         print("==============================================")
 
-        if bad_data_index is not None:
-            print(f"Down-weighting measurement index {bad_data_index} with factor {bad_data_weight:.3f}")
+        if bad_data_indices:
+            print(f"Down-weighting measurement indices {bad_data_indices} with factor {bad_data_weight:.3f}")
 
         for iteration in range(self.max_iterations):
 
@@ -88,8 +97,9 @@ class WeightedLeastSquares:
             ################################################
 
             weights = np.ones(len(z))
-            if bad_data_index is not None:
-                weights[bad_data_index] = bad_data_weight ** 2
+            if bad_data_indices:
+                for idx in bad_data_indices:
+                    weights[int(idx)] = bad_data_weight ** 2
             W = np.diag(base_diag * weights)
 
             ################################################

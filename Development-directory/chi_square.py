@@ -109,6 +109,64 @@ class ChiSquareDetector:
         return index, label, float(scores[index])
 
     ########################################################
+    # PMU-Level Faulty Detection
+    ########################################################
+
+    def detect_faulty_pmu(self, residual_history, pmu_names=None, window_size=3, threshold=0.5):
+        """
+        Detect a persistent faulty PMU by aggregating residual energy
+        over a rolling window of consecutive timestamps.
+
+        residual_history is expected to be shaped as
+            (num_windows, num_measurements)
+        or (num_timestamps, num_measurements), where each measurement
+        group belongs to a PMU.
+        """
+
+        residual_history = np.asarray(residual_history, dtype=float)
+        if residual_history.ndim == 1:
+            residual_history = residual_history.reshape(1, -1)
+
+        if residual_history.shape[1] % 4 != 0:
+            raise ValueError("Residual history length must be a multiple of 4 for PMU groups.")
+
+        if pmu_names is None:
+            pmu_names = [f"PMU{idx + 1}" for idx in range(residual_history.shape[1] // 4)]
+
+        n_measurements = residual_history.shape[1]
+        n_pmus = n_measurements // 4
+
+        scores = []
+        for pmu_idx in range(n_pmus):
+            pmu_slice = slice(4 * pmu_idx, 4 * pmu_idx + 4)
+            pmu_residuals = residual_history[:, pmu_slice]
+            pmu_energy = np.linalg.norm(pmu_residuals, axis=1)
+
+            if pmu_residuals.shape[0] >= window_size:
+                window = np.array([
+                    np.mean(pmu_energy[max(0, t - window_size + 1):t + 1])
+                    for t in range(pmu_residuals.shape[0])
+                ])
+            else:
+                window = np.full(pmu_residuals.shape[0], np.mean(pmu_energy))
+
+            score = float(np.mean(window))
+            scores.append({
+                "pmu": pmu_names[pmu_idx],
+                "score": score,
+                "window_score": float(np.max(window)),
+                "mean_energy": float(np.mean(pmu_energy)),
+            })
+
+        ranked = sorted(scores, key=lambda x: x["score"], reverse=True)
+        suspicious = [entry for entry in ranked if entry["score"] >= threshold]
+
+        if not suspicious:
+            return []
+
+        return suspicious
+
+    ########################################################
     # Detection
     ########################################################
 
