@@ -42,7 +42,7 @@ FREQUENCY = 50                 # Hz
 ODR = 1000                     # Samples/sec
 SIMULATION_TIME = 10.0         # seconds
 DISPLAY_WINDOW = 0.10          # seconds displayed on screen
-PLOT_UPDATE_SAMPLES = 20       # redraw plot every 10 samples
+PLOT_UPDATE_SAMPLES = 160       # redraw plot every 160 samples
 
 CURRENT_AMPLITUDE = 10         # Peak Current (A)
 VOLTAGE_AMPLITUDE = 325        # Peak Voltage (230 Vrms)
@@ -83,7 +83,7 @@ if PRINT_SYNC_OFFSETS:
 # BAD DATA CONFIGURATION
 ###########################################################################
 
-BAD_PMU = np.random.randint(1, 4)
+BAD_PMU = 1  # Periodic mode selects PMUs deterministically in round-robin order
 
 MAG_NOISE_STD = 0.005
 PHASE_NOISE_STD = 0.2
@@ -96,16 +96,17 @@ PACKET_LOSS_PROB = 0.02
 #   "random"
 #   "faulty_pmu"
 
-BAD_DATA_MODE = "faulty_pmu"
+BAD_DATA_MODE = "periodic"  # Options: "periodic", "random", "faulty_pmu"
 
 # Periodic / random mode
-BAD_DATA_INTERVAL = 500
-BAD_DATA_PROB = 0.01
+BAD_DATA_INTERVAL = 500          # Start a new periodic fault every 500 samples = 0.5 s
+PERIODIC_FAULT_DURATION = 50      # Keep each fault active for 50 samples = 50 ms
+BAD_DATA_PROB = 0.01              # Used only by random mode
 BAD_PHASE_ERROR = 20.0
 BAD_MAG_SCALE = 1.20
 
 # Faulty PMU mode
-FAULTY_PMU = 3
+FAULTY_PMU = 1
 FAULT_START_TIME = 2.0
 # main.py uses the latest CSV row, so keep the fault active through the final sample.
 FAULT_END_TIME = SIMULATION_TIME
@@ -356,13 +357,21 @@ def apply_measurement_challenges(
                     )
 
         # Periodic injection
+        #
+        # A new fault starts every BAD_DATA_INTERVAL samples.
+        # The faulty PMU is selected deterministically in round-robin order.
+        # Each event remains active for PERIODIC_FAULT_DURATION samples.
         elif BAD_DATA_MODE.lower() == "periodic":
-            if (
-                sample_index != 0
-                and sample_index % BAD_DATA_INTERVAL == 0
-                and pmu_id == BAD_PMU
-            ):
-                inject_bad_data = True
+            if sample_index != 0 and BAD_DATA_INTERVAL > 0:
+                event_number = sample_index // BAD_DATA_INTERVAL
+                samples_into_event = sample_index % BAD_DATA_INTERVAL
+                periodic_pmu = ((event_number - 1) % 3) + 1
+
+                if (
+                    samples_into_event < PERIODIC_FAULT_DURATION
+                    and pmu_id == periodic_pmu
+                ):
+                    inject_bad_data = True
 
         # Random injection
         elif BAD_DATA_MODE.lower() == "random":
@@ -540,6 +549,21 @@ def finish_simulation():
     print(f"CSV Saved         : {CSV_PATH}")
     print("Plot contains the same data accumulated into CSV.")
 
+    if ENABLE_BAD_DATA and BAD_DATA_MODE.lower() == "periodic":
+        print("\nPeriodic Fault Injection Summary")
+        print("---------------------------------")
+        print(f"Fault interval       : every {BAD_DATA_INTERVAL} samples "
+              f"({BAD_DATA_INTERVAL * DT:.3f} s)")
+        print(f"Fault duration       : {PERIODIC_FAULT_DURATION} samples "
+              f"({PERIODIC_FAULT_DURATION * DT:.3f} s)")
+        print("PMU selection        : deterministic round-robin")
+        print("Sequence             : PMU1 -> PMU2 -> PMU3 -> repeat")
+        print(f"Phase error          : +{BAD_PHASE_ERROR:.2f} deg")
+        print(f"Magnitude scale      : x{BAD_MAG_SCALE:.2f}")
+        print(f"PMU1 bad samples     : {fault_sample_count[0]}")
+        print(f"PMU2 bad samples     : {fault_sample_count[1]}")
+        print(f"PMU3 bad samples     : {fault_sample_count[2]}")
+
     if ENABLE_BAD_DATA and BAD_DATA_MODE.lower() == "faulty_pmu":
         final_sample_time = (TOTAL_SAMPLES - 1) * DT
         final_fault_active = (
@@ -687,7 +711,8 @@ def generate_one_sample():
         and sample_index != 0
         and sample_index % BAD_DATA_INTERVAL == 0
     ):
-        BAD_PMU = np.random.randint(1, 4)
+        event_number = sample_index // BAD_DATA_INTERVAL
+        BAD_PMU = ((event_number - 1) % 3) + 1
 
     #######################################################################
     # DFT defaults
