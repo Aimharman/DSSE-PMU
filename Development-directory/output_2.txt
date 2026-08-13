@@ -15,154 +15,152 @@ Evaluation points       : 500
 ----------------------------------------------
 Degrees of freedom      : 6
 Theoretical threshold   : 12.591587
-Baseline median J       : 693.897442
-Baseline MAD            : 693.807736
+Baseline median J       : 810.358504
+Baseline MAD            : 794.597088
 MAD scale factor        : 1.4826
 Robust sigma multiplier : 6.0
-Operating threshold     : 6865.733541
+Operating threshold     : 7878.776356
 Truth window            : 20 raw samples
 Ground truth flags       : Bad Data / Sync Fault / Clock Drift
 Ground truth is used only for post-run evaluation.
 ----------------------------------------------
 
-[FAULT EVENT] t=4.179 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=63840.2975 | corrected=0.2790 | reduction=1.000
+[FAULT EVENT] t=4.279 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=82881.0909 | corrected=10.1844 | reduction=1.000
 
-[FAULT EVENT] t=4.239 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=67575.6693 | corrected=0.4219 | reduction=1.000
+[FAULT EVENT] t=4.299 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=85930.5251 | corrected=7.3842 | reduction=1.000
 
-[FAULT EVENT] t=4.299 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=74546.1683 | corrected=0.0864 | reduction=1.000
+[FAULT EVENT] t=4.359 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=88458.5617 | corrected=11.1544 | reduction=1.000
 
-[FAULT EVENT] t=4.359 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=79326.9190 | corrected=0.5810 | reduction=1.000
+[FAULT EVENT] t=4.419 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=98008.6904 | corrected=10.7235 | reduction=1.000
 
-[FAULT EVENT] t=4.419 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=82889.5658 | corrected=0.2049 | reduction=1.000
+[FAULT EVENT] t=4.479 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=102961.0720 | corrected=8.6898 | reduction=1.000
 
-[FAULT EVENT] t=4.479 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=87929.8039 | corrected=0.5774 | reduction=1.000
+[FAULT EVENT] t=4.539 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=104042.7338 | corrected=10.3414 | reduction=1.000
 
-[FAULT EVENT] t=4.539 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=94004.3515 | corrected=0.1281 | reduction=1.000
+[FAULT EVENT] t=4.599 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=112891.3175 | corrected=8.9139 | reduction=1.000
 
-[FAULT EVENT] t=4.599 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=94378.8971 | corrected=0.5737 | reduction=1.000
+[FAULT EVENT] t=4.659 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=117313.3605 | corrected=11.0226 | reduction=1.000
 
-[FAULT EVENT] t=4.659 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=103102.2951 | corrected=0.0103 | reduction=1.000
+[FAULT EVENT] t=4.719 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=123814.7935 | corrected=8.5121 | reduction=1.000
 
-[FAULT EVENT] t=4.719 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=106845.4237 | corrected=1.3537 | reduction=1.000
+[FAULT EVENT] t=4.779 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=128915.7116 | corrected=12.8261 | reduction=1.000
 
-[FAULT EVENT] t=4.779 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=117667.1275 | corrected=0.5620 | reduction=1.000
+[FAULT EVENT] t=4.839 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=134936.8884 | corrected=11.3600 | reduction=1.000
 
-[FAULT EVENT] t=4.839 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=120804.3999 | corrected=0.2522 | reduction=1.000
+[FAULT EVENT] t=4.899 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=141825.1045 | corrected=9.6747 | reduction=1.000
 
-[FAULT EVENT] t=4.899 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=131637.3354 | corrected=0.2221 | reduction=1.000
+[FAULT EVENT] t=4.959 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=152529.7652 | corrected=12.7499 | reduction=1.000
 
-[FAULT EVENT] t=4.959 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=134709.4221 | corrected=0.3695 | reduction=1.000
+[FAULT EVENT] t=5.019 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=161384.9075 | corrected=12.9608 | reduction=1.000
 
-[FAULT EVENT] t=5.019 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=145783.6585 | corrected=0.0000 | reduction=1.000
+[FAULT EVENT] t=5.079 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=164689.7450 | corrected=8.5827 | reduction=1.000
 
-[FAULT EVENT] t=5.079 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=154519.0776 | corrected=0.0107 | reduction=1.000
+[FAULT EVENT] t=5.139 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=174200.9993 | corrected=11.9092 | reduction=1.000
 
-[FAULT EVENT] t=5.139 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=159060.2629 | corrected=0.1018 | reduction=1.000
+[FAULT EVENT] t=5.199 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=180198.5730 | corrected=9.9690 | reduction=1.000
 
-[FAULT EVENT] t=5.199 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=164993.5618 | corrected=0.0171 | reduction=1.000
+[FAULT EVENT] t=5.259 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=189524.4773 | corrected=11.1337 | reduction=1.000
 
-[FAULT EVENT] t=5.259 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=170238.4049 | corrected=0.8827 | reduction=1.000
+[FAULT EVENT] t=5.319 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=197442.0152 | corrected=13.3681 | reduction=1.000
 
-[FAULT EVENT] t=5.319 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=183303.5714 | corrected=0.0418 | reduction=1.000
+[FAULT EVENT] t=5.379 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=203117.9352 | corrected=13.6535 | reduction=1.000
 
-[FAULT EVENT] t=5.379 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=188712.0999 | corrected=0.0448 | reduction=1.000
+[FAULT EVENT] t=5.439 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=211582.4636 | corrected=10.5959 | reduction=1.000
 
-[FAULT EVENT] t=5.439 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=197580.3575 | corrected=0.0060 | reduction=1.000
+[FAULT EVENT] t=5.499 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=222366.0900 | corrected=9.8313 | reduction=1.000
 
-[FAULT EVENT] t=5.499 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=202556.6050 | corrected=0.1359 | reduction=1.000
+[FAULT EVENT] t=5.559 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=229316.4929 | corrected=14.1651 | reduction=1.000
 
-[FAULT EVENT] t=5.559 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=210462.3379 | corrected=0.8418 | reduction=1.000
+[FAULT EVENT] t=5.619 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=237482.9025 | corrected=11.9046 | reduction=1.000
 
-[FAULT EVENT] t=5.619 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=222798.2805 | corrected=1.3807 | reduction=1.000
+[FAULT EVENT] t=5.679 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=246005.1569 | corrected=9.9416 | reduction=1.000
 
-[FAULT EVENT] t=5.679 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=228939.0761 | corrected=0.3721 | reduction=1.000
+[FAULT EVENT] t=5.739 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=254803.1296 | corrected=12.7387 | reduction=1.000
 
-[FAULT EVENT] t=5.739 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=240422.6874 | corrected=0.9877 | reduction=1.000
+[FAULT EVENT] t=5.799 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=261160.4713 | corrected=16.0328 | reduction=1.000
 
-[FAULT EVENT] t=5.799 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=246127.3946 | corrected=0.3992 | reduction=1.000
+[FAULT EVENT] t=5.859 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=268103.0880 | corrected=14.2732 | reduction=1.000
 
-[FAULT EVENT] t=5.859 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=255540.5152 | corrected=0.2456 | reduction=1.000
+[FAULT EVENT] t=5.919 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=276398.4189 | corrected=11.0400 | reduction=1.000
 
-[FAULT EVENT] t=5.919 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=263907.8443 | corrected=0.0622 | reduction=1.000
+[FAULT EVENT] t=5.979 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=288709.1548 | corrected=10.0145 | reduction=1.000
 
-[FAULT EVENT] t=5.979 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=273829.5970 | corrected=1.0100 | reduction=1.000
+[FAULT EVENT] t=6.039 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=291918.9864 | corrected=14.4352 | reduction=1.000
 
-[FAULT EVENT] t=6.039 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=279895.5610 | corrected=0.1015 | reduction=1.000
+[FAULT EVENT] t=6.099 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=300831.3308 | corrected=11.5725 | reduction=1.000
 
-[FAULT EVENT] t=6.099 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=283931.8444 | corrected=1.2885 | reduction=1.000
+[FAULT EVENT] t=6.159 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=312039.2641 | corrected=16.0086 | reduction=1.000
 
-[FAULT EVENT] t=6.159 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=297520.7293 | corrected=0.0762 | reduction=1.000
+[FAULT EVENT] t=6.219 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=317762.4600 | corrected=16.1286 | reduction=1.000
 
-[FAULT EVENT] t=6.219 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=304048.2983 | corrected=0.5087 | reduction=1.000
+[FAULT EVENT] t=6.279 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=281528.7032 | corrected=11.6757 | reduction=1.000
 
-[FAULT EVENT] t=6.279 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=312173.8462 | corrected=0.1406 | reduction=1.000
+[FAULT EVENT] t=6.339 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=288716.5157 | corrected=7.9962 | reduction=1.000
 
-[FAULT EVENT] t=6.339 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=319705.0251 | corrected=0.1733 | reduction=1.000
+[FAULT EVENT] t=6.399 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=296864.1646 | corrected=8.9955 | reduction=1.000
 
-[FAULT EVENT] t=6.399 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=338216.0732 | corrected=0.7429 | reduction=1.000
+[FAULT EVENT] t=6.459 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=299628.2817 | corrected=16.1011 | reduction=1.000
 
-[FAULT EVENT] t=6.459 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=296113.8789 | corrected=0.5957 | reduction=1.000
+[FAULT EVENT] t=6.519 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=308276.4024 | corrected=10.0726 | reduction=1.000
 
-[FAULT EVENT] t=6.519 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=308327.4778 | corrected=0.1129 | reduction=1.000
+[FAULT EVENT] t=6.579 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=332004.9203 | corrected=7.7318 | reduction=1.000
 
-[FAULT EVENT] t=6.579 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=326743.5074 | corrected=0.0831 | reduction=1.000
+[FAULT EVENT] t=6.639 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=289564.8281 | corrected=13.0662 | reduction=1.000
 
-[FAULT EVENT] t=6.639 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=336758.5868 | corrected=0.2803 | reduction=1.000
+[FAULT EVENT] t=6.699 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=348572.8425 | corrected=13.5062 | reduction=1.000
 
-[FAULT EVENT] t=6.699 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=291148.1027 | corrected=0.7662 | reduction=1.000
+[FAULT EVENT] t=6.759 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=355726.3771 | corrected=12.4698 | reduction=1.000
 
-[FAULT EVENT] t=6.759 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=363233.8774 | corrected=0.0040 | reduction=1.000
+[FAULT EVENT] t=6.819 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=277397.9936 | corrected=16.3314 | reduction=1.000
 
-[FAULT EVENT] t=6.819 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=181745.1785 | corrected=0.6188 | reduction=1.000
+[FAULT EVENT] t=6.879 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=185948.3225 | corrected=15.0718 | reduction=1.000
 
-[FAULT EVENT] t=6.879 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=183352.4250 | corrected=0.3693 | reduction=1.000
+[FAULT EVENT] t=6.939 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=187052.0971 | corrected=14.6347 | reduction=1.000
 
-[FAULT EVENT] t=6.939 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=185201.2135 | corrected=1.0332 | reduction=1.000
+[FAULT EVENT] t=6.999 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=188992.0419 | corrected=11.3021 | reduction=1.000
 
-[FAULT EVENT] t=6.999 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=187684.2957 | corrected=0.2849 | reduction=1.000
+[FAULT EVENT] t=7.059 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=190467.4904 | corrected=13.2500 | reduction=1.000
 
-[FAULT EVENT] t=7.059 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=189264.7566 | corrected=0.7107 | reduction=1.000
+[FAULT EVENT] t=7.119 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=191937.6513 | corrected=9.5839 | reduction=1.000
 
-[FAULT EVENT] t=7.119 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=190704.2235 | corrected=0.4828 | reduction=1.000
+[FAULT EVENT] t=7.179 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=192310.6976 | corrected=12.2390 | reduction=1.000
 
-[FAULT EVENT] t=7.179 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=192698.2045 | corrected=0.6865 | reduction=1.000
+[FAULT EVENT] t=7.239 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=193176.5951 | corrected=9.7735 | reduction=1.000
 
-[FAULT EVENT] t=7.239 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=193879.3530 | corrected=0.0165 | reduction=1.000
+[FAULT EVENT] t=7.299 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=193527.5018 | corrected=11.2473 | reduction=1.000
 
-[FAULT EVENT] t=7.299 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=194894.1501 | corrected=0.5411 | reduction=1.000
+[FAULT EVENT] t=7.359 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=193446.9823 | corrected=12.6576 | reduction=1.000
 
-[FAULT EVENT] t=7.359 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=195782.2757 | corrected=1.1992 | reduction=1.000
+[FAULT EVENT] t=7.419 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=193271.5523 | corrected=8.4416 | reduction=1.000
 
-[FAULT EVENT] t=7.419 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=195797.6091 | corrected=0.6043 | reduction=1.000
+[FAULT EVENT] t=7.479 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=192054.1673 | corrected=17.9341 | reduction=1.000
 
-[FAULT EVENT] t=7.479 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=196067.4276 | corrected=1.0638 | reduction=1.000
+[FAULT EVENT] t=7.539 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=249994.1780 | corrected=16.4840 | reduction=1.000
 
-[FAULT EVENT] t=7.539 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=195403.2069 | corrected=0.3950 | reduction=1.000
+[FAULT EVENT] t=7.599 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=377400.7255 | corrected=12.7674 | reduction=1.000
 
-[FAULT EVENT] t=7.599 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=194781.3113 | corrected=0.4529 | reduction=1.000
+[FAULT EVENT] t=7.659 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=188390.4213 | corrected=12.0368 | reduction=1.000
 
-[FAULT EVENT] t=7.659 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=193679.9191 | corrected=0.8573 | reduction=1.000
+[FAULT EVENT] t=7.719 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=353657.5337 | corrected=10.5727 | reduction=1.000
 
-[FAULT EVENT] t=7.719 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=192975.0580 | corrected=1.0077 | reduction=1.000
+[FAULT EVENT] t=7.779 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=872929.9498 | corrected=6.4441 | reduction=1.000
 
-[FAULT EVENT] t=7.779 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=362621.4836 | corrected=0.5364 | reduction=1.000
+[FAULT EVENT] t=7.839 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=132088.3318 | corrected=11.6500 | reduction=1.000
 
-[FAULT EVENT] t=7.839 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=877816.6310 | corrected=0.5642 | reduction=1.000
+[FAULT EVENT] t=7.899 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=365860.8302 | corrected=16.8069 | reduction=1.000
 
-[FAULT EVENT] t=7.899 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=351995.5545 | corrected=0.4805 | reduction=1.000
-
-[FAULT EVENT] t=7.959 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=407162.8519 | corrected=0.6294 | reduction=1.000
+[FAULT EVENT] t=7.979 s | Detected=PMU2 | Actual=PMU2[CLOCK_DRIFT] | J=358276.9896 | corrected=7.2762 | reduction=1.000
 
 ==============================================
  Automatic Monitoring Summary
 ==============================================
 Evaluation points       : 500
-Global chi-square fails : 192
-PMU candidates          : 192
-Confirmed fault points  : 192
+Global chi-square fails : 187
+PMU candidates          : 186
+Confirmed fault points  : 186
 Confirmed fault events  : 1
 PMU1: ground_truth=0, TP=0, FP=0, FN=0, TN=500, precision=0.000, recall=0.000
-PMU2: ground_truth=300, TP=192, FP=0, FN=108, TN=200, precision=1.000, recall=0.640
+PMU2: ground_truth=300, TP=186, FP=0, FN=114, TN=200, precision=1.000, recall=0.620
 PMU3: ground_truth=0, TP=0, FP=0, FN=0, TN=500, precision=0.000, recall=0.000
 ==============================================
 Results CSV : /home/ankesh/Documents/IIT_Jammu/DSSE-PMU/Development-directory/PDC_Detection_Results.csv

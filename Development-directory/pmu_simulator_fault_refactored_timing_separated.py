@@ -248,6 +248,7 @@ COLUMNS = [
 
     "PMU1 Sync Offset",
     "PMU1 Sync Fault",
+    "PMU1 Sync Fault Active",
     "PMU1 Mag Noise",
     "PMU1 Phase Noise",
     "PMU1 Clock Drift",
@@ -268,6 +269,7 @@ COLUMNS = [
 
     "PMU2 Sync Offset",
     "PMU2 Sync Fault",
+    "PMU2 Sync Fault Active",
     "PMU2 Mag Noise",
     "PMU2 Phase Noise",
     "PMU2 Clock Drift",
@@ -288,6 +290,7 @@ COLUMNS = [
 
     "PMU3 Sync Offset",
     "PMU3 Sync Fault",
+    "PMU3 Sync Fault Active",
     "PMU3 Mag Noise",
     "PMU3 Phase Noise",
     "PMU3 Clock Drift",
@@ -413,6 +416,7 @@ def apply_measurement_challenges(
 
         # Deliberate synchronization fault
         "sync_fault": 0.0,
+        "sync_fault_active": False,
 
         "mag_noise": 0.0,
         "phase_noise": 0.0,
@@ -451,6 +455,7 @@ def apply_measurement_challenges(
     ):
         measured_phase += SYNC_FAULT_PHASE_ERROR
         metadata["sync_fault"] = SYNC_FAULT_PHASE_ERROR
+        metadata["sync_fault_active"] = True
 
     # ---------------------------------------------------------------
     # 3. Measurement noise
@@ -607,6 +612,7 @@ def nan_measurement_metadata():
     return {
         "sync_error": np.nan,
         "sync_fault": np.nan,
+        "sync_fault_active": False,
         "mag_noise": np.nan,
         "phase_noise": np.nan,
         "clock_drift": np.nan,
@@ -700,6 +706,7 @@ def nan_measurement_metadata():
     return {
         "sync_error": np.nan,
         "sync_fault": np.nan,
+        "sync_fault_active": False,
         "mag_noise": np.nan,
         "phase_noise": np.nan,
         "clock_drift": np.nan,
@@ -1186,6 +1193,7 @@ def generate_one_sample():
 
         meta1["sync_error"],
         meta1["sync_fault"],
+        meta1["sync_fault_active"],
         meta1["mag_noise"],
         meta1["phase_noise"],
         meta1["clock_drift"],
@@ -1207,6 +1215,7 @@ def generate_one_sample():
 
         meta2["sync_error"],
         meta2["sync_fault"],
+        meta2["sync_fault_active"],
         meta2["mag_noise"],
         meta2["phase_noise"],
         meta2["clock_drift"],
@@ -1228,6 +1237,7 @@ def generate_one_sample():
 
         meta3["sync_error"],
         meta3["sync_fault"],
+        meta3["sync_fault_active"],
         meta3["mag_noise"],
         meta3["phase_noise"],
         meta3["clock_drift"],

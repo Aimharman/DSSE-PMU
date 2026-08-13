@@ -103,18 +103,27 @@ def _actual_fault_truth_window(df, sample_index, window_samples=SCAN_INTERVAL_SA
         pmu = f"PMU{bus}"
 
         flag_columns = {
-            "BAD_DATA": f"PMU{bus} Bad Data",
-            "SYNC_FAULT": f"PMU{bus} Sync Fault",
-            "CLOCK_DRIFT": f"PMU{bus} Clock Drift Fault",
+            "BAD_DATA": [f"PMU{bus} Bad Data"],
+            # Support both the original numeric fault column and the new
+            # explicit boolean bookkeeping column.
+            "SYNC_FAULT": [
+                f"PMU{bus} Sync Fault Active",
+                f"PMU{bus} Sync Fault",
+            ],
+            "CLOCK_DRIFT": [
+                f"PMU{bus} Clock Drift Fault",
+                f"PMU{bus} Clock Drift Fault Active",
+            ],
         }
 
-        for fault_type, column in flag_columns.items():
-            if column not in df.columns:
-                continue
-
-            flags = df.iloc[start:stop][column].map(_truth_bool)
-            if flags.any():
-                truth[pmu].add(fault_type)
+        for fault_type, columns in flag_columns.items():
+            for column in columns:
+                if column not in df.columns:
+                    continue
+                flags = df.iloc[start:stop][column].map(_truth_bool)
+                if flags.any():
+                    truth[pmu].add(fault_type)
+                    break
 
     return truth
 
