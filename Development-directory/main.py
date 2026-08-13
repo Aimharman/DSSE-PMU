@@ -63,18 +63,62 @@ def _valid_measurement_rows(df):
     return df.index[df[columns].notna().all(axis=1)].to_numpy()
 
 
-def _actual_fault_pmu(row):
-    """Ground truth for evaluation only; never used by detection."""
+def _truth_bool(value):
+    """Convert CSV truth/flag values to a reliable boolean."""
+    if pd.isna(value):
+        return False
+    if isinstance(value, (bool, np.bool_)):
+        return bool(value)
+    return str(value).strip().lower() in {"true", "1", "1.0", "yes", "y"}
+
+
+def _actual_fault_pmu_window(df, sample_index, window_samples=SCAN_INTERVAL_SAMPLES):
+    """
+    Return simulator ground truth for the PDC snapshot, using the raw
+    measurement window that contributes to that snapshot.
+
+    IMPORTANT:
+        This function is used ONLY for post-run evaluation.  It is never
+        called by WLS, chi-square detection, PMU screening, or isolation.
+
+    A random raw-sample fault does not necessarily occur on the exact CSV
+    row selected by the PDC.  Therefore checking only row[sample_index] can
+    produce false FP/FN statistics.  For a 1000-Hz ADC and 50-Hz PDC, the
+    PMU reporting window contains 20 raw samples.
+
+    A PMU is marked faulty for the PDC snapshot if ANY raw sample in that
+    contributing window carries its simulator Bad Data flag.
+    """
+    start = max(0, int(sample_index) - int(window_samples) + 1)
+    stop = min(len(df), int(sample_index) + 1)
+
     faulty = []
     for bus in range(1, 4):
         col = f"PMU{bus} Bad Data"
-        if col in row.index:
-            value = row[col]
-            if pd.notna(value) and str(value).strip().lower() in {
-                "true", "1", "1.0", "yes"
-            }:
-                faulty.append(f"PMU{bus}")
+        if col not in df.columns:
+            continue
+
+        flags = df.iloc[start:stop][col]
+        if flags.map(_truth_bool).any():
+            faulty.append(f"PMU{bus}")
+
     return ",".join(faulty)
+
+
+def _fault_window_description(df, sample_index, window_samples=SCAN_INTERVAL_SAMPLES):
+    """Return raw-sample/time limits used only for audit/reporting."""
+    start = max(0, int(sample_index) - int(window_samples) + 1)
+    stop = min(len(df), int(sample_index) + 1)
+    if stop <= start:
+        return start, max(start, stop - 1), float("nan"), float("nan")
+
+    times = pd.to_numeric(df.iloc[start:stop].iloc[:, 0], errors="coerce")
+    return (
+        start,
+        stop - 1,
+        float(times.iloc[0]),
+        float(times.iloc[-1]),
+    )
 
 
 def _run_wls(solver, z, x0, **kwargs):
@@ -134,7 +178,7 @@ def collect_baseline_statistics(csv_file, scan_indices, apply_sync_correction=Fa
 # ONE DETECTION / ISOLATION PASS
 ###########################################################################
 
-def process_snapshot(snapshot, detector, csv_file, operational_threshold):
+def process_snapshot(snapshot, detector, csv_file, operational_threshold, truth_df=None):
     estimator = snapshot["estimator"]
     solver = WeightedLeastSquares()
 
@@ -220,7 +264,17 @@ def process_snapshot(snapshot, detector, csv_file, operational_threshold):
                 corrected_theoretical_threshold = test_theoretical
                 break
 
-    row = estimator.df.iloc[snapshot["sample_index"]]
+    # Ground truth is evaluated over the complete raw-sample window, not
+    # merely at the selected PDC row.  This is especially important for
+    # random injection, where a fault may occur between two PDC snapshots.
+    csv_df = truth_df if truth_df is not None else pd.read_csv(csv_file)
+    sample_index = int(snapshot["sample_index"])
+    actual_fault = _actual_fault_pmu_window(
+        csv_df, sample_index, SCAN_INTERVAL_SAMPLES
+    )
+    window_start, window_end, window_t0, window_t1 = _fault_window_description(
+        csv_df, sample_index, SCAN_INTERVAL_SAMPLES
+    )
 
     return {
         "sample_index": snapshot["sample_index"],
@@ -243,7 +297,11 @@ def process_snapshot(snapshot, detector, csv_file, operational_threshold):
         "chi_square_reduction": float(best_reduction),
         "correction_candidate": correction_candidate or best_candidate,
         "active_measurements": int(corrected_active_count),
-        "actual_faulty_pmu": _actual_fault_pmu(row),
+        "actual_faulty_pmu": actual_fault,
+        "truth_window_start": int(window_start),
+        "truth_window_end": int(window_end),
+        "truth_window_t0_s": float(window_t0),
+        "truth_window_t1_s": float(window_t1),
     }
 
 
@@ -348,6 +406,8 @@ def run_automatic_scan(csv_file, apply_sync_correction=False):
     print(f"MAD scale factor        : {1.4826:.4f}")
     print(f"Robust sigma multiplier : {ROBUST_SIGMA_MULTIPLIER:.1f}")
     print(f"Operating threshold     : {operational:.6f}")
+    print(f"Truth window            : {SCAN_INTERVAL_SAMPLES} raw samples")
+    print("Ground truth is used only for post-run evaluation.")
     print("----------------------------------------------")
 
     # ---------------------------------------------------------
@@ -362,6 +422,7 @@ def run_automatic_scan(csv_file, apply_sync_correction=False):
             detector,
             csv_file,
             operational,
+            truth_df=df,
         )
         results.append(result)
 
