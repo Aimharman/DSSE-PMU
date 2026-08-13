@@ -72,38 +72,66 @@ def _truth_bool(value):
     return str(value).strip().lower() in {"true", "1", "1.0", "yes", "y"}
 
 
-def _actual_fault_pmu_window(df, sample_index, window_samples=SCAN_INTERVAL_SAMPLES):
+def _actual_fault_truth_window(df, sample_index, window_samples=SCAN_INTERVAL_SAMPLES):
     """
-    Return simulator ground truth for the PDC snapshot, using the raw
-    measurement window that contributes to that snapshot.
+    Return post-run simulator ground truth for the PDC snapshot.
+
+    The PDC/DSSE snapshot represents the raw measurement window ending at
+    ``sample_index``.  Ground truth is therefore evaluated over the complete
+    window, not only at the final raw sample.
 
     IMPORTANT:
-        This function is used ONLY for post-run evaluation.  It is never
-        called by WLS, chi-square detection, PMU screening, or isolation.
+        This function is used ONLY for post-run evaluation/reporting.  It is
+        never used by WLS, chi-square detection, PMU screening, or isolation.
 
-    A random raw-sample fault does not necessarily occur on the exact CSV
-    row selected by the PDC.  Therefore checking only row[sample_index] can
-    produce false FP/FN statistics.  For a 1000-Hz ADC and 50-Hz PDC, the
-    PMU reporting window contains 20 raw samples.
+    A PMU is considered ground-truth faulty for the PDC snapshot if any raw
+    sample in the contributing window contains one of the simulator's
+    deliberate fault flags:
 
-    A PMU is marked faulty for the PDC snapshot if ANY raw sample in that
-    contributing window carries its simulator Bad Data flag.
+        Bad Data          -> measurement corruption
+        Sync Fault        -> fixed synchronization/reference error
+        Clock Drift Fault -> time-base drift error
+
+    Normal PMU synchronization offset is deliberately NOT treated as a fault.
     """
     start = max(0, int(sample_index) - int(window_samples) + 1)
     stop = min(len(df), int(sample_index) + 1)
 
-    faulty = []
+    truth = {"PMU1": set(), "PMU2": set(), "PMU3": set()}
+
     for bus in range(1, 4):
-        col = f"PMU{bus} Bad Data"
-        if col not in df.columns:
-            continue
+        pmu = f"PMU{bus}"
 
-        flags = df.iloc[start:stop][col]
-        if flags.map(_truth_bool).any():
-            faulty.append(f"PMU{bus}")
+        flag_columns = {
+            "BAD_DATA": f"PMU{bus} Bad Data",
+            "SYNC_FAULT": f"PMU{bus} Sync Fault",
+            "CLOCK_DRIFT": f"PMU{bus} Clock Drift Fault",
+        }
 
-    return ",".join(faulty)
+        for fault_type, column in flag_columns.items():
+            if column not in df.columns:
+                continue
 
+            flags = df.iloc[start:stop][column].map(_truth_bool)
+            if flags.any():
+                truth[pmu].add(fault_type)
+
+    return truth
+
+
+def _format_fault_truth(truth):
+    """Convert {PMUx: {FAULT_TYPES}} to a compact reporting string."""
+    parts = []
+    for pmu in ("PMU1", "PMU2", "PMU3"):
+        types = sorted(truth.get(pmu, set()))
+        if types:
+            parts.append(f"{pmu}[{'+'.join(types)}]")
+    return ",".join(parts)
+
+
+def _truth_pmU_set(truth):
+    """Return the set of PMUs with at least one deliberate fault."""
+    return {pmu for pmu, types in truth.items() if types}
 
 def _fault_window_description(df, sample_index, window_samples=SCAN_INTERVAL_SAMPLES):
     """Return raw-sample/time limits used only for audit/reporting."""
@@ -269,8 +297,15 @@ def process_snapshot(snapshot, detector, csv_file, operational_threshold, truth_
     # random injection, where a fault may occur between two PDC snapshots.
     csv_df = truth_df if truth_df is not None else pd.read_csv(csv_file)
     sample_index = int(snapshot["sample_index"])
-    actual_fault = _actual_fault_pmu_window(
+    truth = _actual_fault_truth_window(
         csv_df, sample_index, SCAN_INTERVAL_SAMPLES
+    )
+    actual_fault = _format_fault_truth(truth)
+    actual_fault_pmUs = ",".join(
+        pmu for pmu in ("PMU1", "PMU2", "PMU3") if truth[pmu]
+    )
+    actual_fault_types = ",".join(
+        sorted({fault_type for types in truth.values() for fault_type in types})
     )
     window_start, window_end, window_t0, window_t1 = _fault_window_description(
         csv_df, sample_index, SCAN_INTERVAL_SAMPLES
@@ -297,7 +332,9 @@ def process_snapshot(snapshot, detector, csv_file, operational_threshold, truth_
         "chi_square_reduction": float(best_reduction),
         "correction_candidate": correction_candidate or best_candidate,
         "active_measurements": int(corrected_active_count),
-        "actual_faulty_pmu": actual_fault,
+        "actual_faulty_pmu": actual_fault_pmUs,
+        "actual_fault_type": actual_fault_types,
+        "actual_fault_detail": actual_fault,
         "truth_window_start": int(window_start),
         "truth_window_end": int(window_end),
         "truth_window_t0_s": float(window_t0),
@@ -338,7 +375,7 @@ def _print_metrics(df):
 
     for pmu in ["PMU1", "PMU2", "PMU3"]:
         detected = df["detected_pmu"] == pmu
-        actual = df["actual_faulty_pmu"].astype(str).str.contains(pmu, regex=False)
+        actual = df["actual_faulty_pmu"].astype(str).str.split(",").apply(lambda values: pmu in values)
         tp = int((detected & actual).sum())
         fp = int((detected & ~actual).sum())
         fn = int((~detected & actual).sum())
@@ -407,6 +444,7 @@ def run_automatic_scan(csv_file, apply_sync_correction=False):
     print(f"Robust sigma multiplier : {ROBUST_SIGMA_MULTIPLIER:.1f}")
     print(f"Operating threshold     : {operational:.6f}")
     print(f"Truth window            : {SCAN_INTERVAL_SAMPLES} raw samples")
+    print("Ground truth flags       : Bad Data / Sync Fault / Clock Drift")
     print("Ground truth is used only for post-run evaluation.")
     print("----------------------------------------------")
 
@@ -433,7 +471,7 @@ def run_automatic_scan(csv_file, apply_sync_correction=False):
                 print(
                     f"\n[FAULT EVENT] t={result['time_s']:.3f} s | "
                     f"Detected={pmu} | "
-                    f"Actual={result['actual_faulty_pmu'] or 'None'} | "
+                    f"Actual={result['actual_fault_detail'] or 'None'} | "
                     f"J={result['initial_chi_square']:.4f} | "
                     f"corrected={result['corrected_chi_square']:.4f} | "
                     f"reduction={result['chi_square_reduction']:.3f}"

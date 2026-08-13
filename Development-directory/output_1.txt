@@ -15,148 +15,149 @@ Evaluation points       : 500
 ----------------------------------------------
 Degrees of freedom      : 6
 Theoretical threshold   : 12.591587
-Baseline median J       : 3.614278
-Baseline MAD            : 2.000978
+Baseline median J       : 6.924461
+Baseline MAD            : 3.067531
 MAD scale factor        : 1.4826
 Robust sigma multiplier : 6.0
-Operating threshold     : 21.414181
+Operating threshold     : 34.211994
 Truth window            : 20 raw samples
+Ground truth flags       : Bad Data / Sync Fault / Clock Drift
 Ground truth is used only for post-run evaluation.
 ----------------------------------------------
 
-[FAULT EVENT] t=2.019 s | Detected=PMU2 | Actual=None | J=230.1272 | corrected=1.8865 | reduction=0.992
+[FAULT EVENT] t=2.019 s | Detected=PMU2 | Actual=None | J=258.7450 | corrected=0.6542 | reduction=0.997
 
-[FAULT EVENT] t=2.079 s | Detected=PMU2 | Actual=None | J=235.0151 | corrected=1.8499 | reduction=0.992
+[FAULT EVENT] t=2.079 s | Detected=PMU2 | Actual=None | J=260.3772 | corrected=1.0139 | reduction=0.996
 
-[FAULT EVENT] t=2.139 s | Detected=PMU2 | Actual=None | J=229.0865 | corrected=1.6000 | reduction=0.993
+[FAULT EVENT] t=2.139 s | Detected=PMU2 | Actual=None | J=284.0733 | corrected=1.0034 | reduction=0.996
 
-[FAULT EVENT] t=2.199 s | Detected=PMU2 | Actual=None | J=223.3527 | corrected=1.7979 | reduction=0.992
+[FAULT EVENT] t=2.199 s | Detected=PMU2 | Actual=None | J=285.0420 | corrected=0.7564 | reduction=0.997
 
-[FAULT EVENT] t=2.259 s | Detected=PMU2 | Actual=None | J=225.1473 | corrected=1.3225 | reduction=0.994
+[FAULT EVENT] t=2.259 s | Detected=PMU2 | Actual=None | J=266.4487 | corrected=0.1464 | reduction=0.999
 
-[FAULT EVENT] t=2.319 s | Detected=PMU2 | Actual=None | J=218.1239 | corrected=1.7690 | reduction=0.992
+[FAULT EVENT] t=2.319 s | Detected=PMU2 | Actual=None | J=284.2384 | corrected=0.3857 | reduction=0.999
 
-[FAULT EVENT] t=2.379 s | Detected=PMU2 | Actual=None | J=224.2993 | corrected=1.0886 | reduction=0.995
+[FAULT EVENT] t=2.379 s | Detected=PMU2 | Actual=None | J=268.6460 | corrected=0.7125 | reduction=0.997
 
-[FAULT EVENT] t=2.439 s | Detected=PMU2 | Actual=None | J=226.6721 | corrected=0.6414 | reduction=0.997
+[FAULT EVENT] t=2.439 s | Detected=PMU2 | Actual=None | J=261.8628 | corrected=0.4707 | reduction=0.998
 
-[FAULT EVENT] t=2.499 s | Detected=PMU2 | Actual=None | J=234.6104 | corrected=1.5137 | reduction=0.994
+[FAULT EVENT] t=2.499 s | Detected=PMU2 | Actual=None | J=256.3813 | corrected=0.8264 | reduction=0.997
 
-[FAULT EVENT] t=2.559 s | Detected=PMU2 | Actual=None | J=213.7401 | corrected=0.6116 | reduction=0.997
+[FAULT EVENT] t=2.559 s | Detected=PMU2 | Actual=None | J=234.9402 | corrected=0.7932 | reduction=0.997
 
-[FAULT EVENT] t=2.619 s | Detected=PMU2 | Actual=None | J=231.0406 | corrected=2.3403 | reduction=0.990
+[FAULT EVENT] t=2.619 s | Detected=PMU2 | Actual=None | J=266.8698 | corrected=0.6117 | reduction=0.998
 
-[FAULT EVENT] t=2.679 s | Detected=PMU2 | Actual=None | J=230.2229 | corrected=1.5700 | reduction=0.993
+[FAULT EVENT] t=2.679 s | Detected=PMU2 | Actual=None | J=269.4328 | corrected=0.2962 | reduction=0.999
 
-[FAULT EVENT] t=2.739 s | Detected=PMU2 | Actual=None | J=229.0420 | corrected=1.5019 | reduction=0.993
+[FAULT EVENT] t=2.739 s | Detected=PMU2 | Actual=None | J=232.9548 | corrected=1.3233 | reduction=0.994
 
-[FAULT EVENT] t=2.799 s | Detected=PMU2 | Actual=None | J=215.8936 | corrected=1.3603 | reduction=0.994
+[FAULT EVENT] t=2.799 s | Detected=PMU2 | Actual=None | J=268.7159 | corrected=1.4334 | reduction=0.995
 
-[FAULT EVENT] t=2.859 s | Detected=PMU2 | Actual=None | J=232.8229 | corrected=1.4142 | reduction=0.994
+[FAULT EVENT] t=2.859 s | Detected=PMU2 | Actual=None | J=276.6933 | corrected=0.9951 | reduction=0.996
 
-[FAULT EVENT] t=2.919 s | Detected=PMU2 | Actual=None | J=209.9308 | corrected=2.5333 | reduction=0.988
+[FAULT EVENT] t=2.919 s | Detected=PMU2 | Actual=None | J=271.0469 | corrected=0.4911 | reduction=0.998
 
-[FAULT EVENT] t=2.979 s | Detected=PMU2 | Actual=None | J=240.4337 | corrected=0.5642 | reduction=0.998
+[FAULT EVENT] t=2.979 s | Detected=PMU2 | Actual=None | J=275.0787 | corrected=0.5259 | reduction=0.998
 
-[FAULT EVENT] t=3.039 s | Detected=PMU2 | Actual=None | J=244.4335 | corrected=2.0495 | reduction=0.992
+[FAULT EVENT] t=3.039 s | Detected=PMU2 | Actual=None | J=259.9050 | corrected=1.0548 | reduction=0.996
 
-[FAULT EVENT] t=3.099 s | Detected=PMU2 | Actual=None | J=216.4841 | corrected=3.7717 | reduction=0.983
+[FAULT EVENT] t=3.099 s | Detected=PMU2 | Actual=None | J=285.6635 | corrected=0.3458 | reduction=0.999
 
-[FAULT EVENT] t=3.159 s | Detected=PMU2 | Actual=None | J=219.5560 | corrected=2.2797 | reduction=0.990
+[FAULT EVENT] t=3.159 s | Detected=PMU2 | Actual=None | J=260.8424 | corrected=0.8984 | reduction=0.997
 
-[FAULT EVENT] t=3.219 s | Detected=PMU2 | Actual=None | J=233.6007 | corrected=0.8590 | reduction=0.996
+[FAULT EVENT] t=3.219 s | Detected=PMU2 | Actual=None | J=264.8379 | corrected=0.3158 | reduction=0.999
 
-[FAULT EVENT] t=3.279 s | Detected=PMU2 | Actual=None | J=214.4231 | corrected=1.0265 | reduction=0.995
+[FAULT EVENT] t=3.279 s | Detected=PMU2 | Actual=None | J=256.1923 | corrected=0.7292 | reduction=0.997
 
-[FAULT EVENT] t=3.339 s | Detected=PMU2 | Actual=None | J=224.9511 | corrected=1.0438 | reduction=0.995
+[FAULT EVENT] t=3.339 s | Detected=PMU2 | Actual=None | J=254.5624 | corrected=0.9999 | reduction=0.996
 
-[FAULT EVENT] t=3.399 s | Detected=PMU2 | Actual=None | J=217.5048 | corrected=1.5035 | reduction=0.993
+[FAULT EVENT] t=3.399 s | Detected=PMU2 | Actual=None | J=255.7687 | corrected=0.0867 | reduction=1.000
 
-[FAULT EVENT] t=3.459 s | Detected=PMU2 | Actual=None | J=230.0970 | corrected=0.7943 | reduction=0.997
+[FAULT EVENT] t=3.459 s | Detected=PMU2 | Actual=None | J=285.8686 | corrected=0.3590 | reduction=0.999
 
-[FAULT EVENT] t=3.519 s | Detected=PMU2 | Actual=None | J=217.1974 | corrected=1.5849 | reduction=0.993
+[FAULT EVENT] t=3.519 s | Detected=PMU2 | Actual=None | J=275.9731 | corrected=2.0076 | reduction=0.993
 
-[FAULT EVENT] t=3.579 s | Detected=PMU2 | Actual=None | J=227.2854 | corrected=1.7320 | reduction=0.992
+[FAULT EVENT] t=3.579 s | Detected=PMU2 | Actual=None | J=265.7364 | corrected=0.9756 | reduction=0.996
 
-[FAULT EVENT] t=3.639 s | Detected=PMU2 | Actual=None | J=223.3329 | corrected=1.0101 | reduction=0.995
+[FAULT EVENT] t=3.639 s | Detected=PMU2 | Actual=None | J=269.2855 | corrected=1.4330 | reduction=0.995
 
-[FAULT EVENT] t=3.699 s | Detected=PMU2 | Actual=None | J=205.7921 | corrected=0.8367 | reduction=0.996
+[FAULT EVENT] t=3.699 s | Detected=PMU2 | Actual=None | J=253.9542 | corrected=0.8015 | reduction=0.997
 
-[FAULT EVENT] t=3.759 s | Detected=PMU2 | Actual=None | J=219.6339 | corrected=1.0990 | reduction=0.995
+[FAULT EVENT] t=3.759 s | Detected=PMU2 | Actual=None | J=267.7996 | corrected=2.1497 | reduction=0.992
 
-[FAULT EVENT] t=3.819 s | Detected=PMU2 | Actual=None | J=237.2286 | corrected=2.2809 | reduction=0.990
+[FAULT EVENT] t=3.819 s | Detected=PMU2 | Actual=None | J=271.1082 | corrected=0.5673 | reduction=0.998
 
-[FAULT EVENT] t=3.879 s | Detected=PMU2 | Actual=None | J=233.3077 | corrected=1.7563 | reduction=0.992
+[FAULT EVENT] t=3.879 s | Detected=PMU2 | Actual=None | J=257.5439 | corrected=0.6874 | reduction=0.997
 
-[FAULT EVENT] t=3.939 s | Detected=PMU2 | Actual=None | J=208.9015 | corrected=0.6673 | reduction=0.997
+[FAULT EVENT] t=3.939 s | Detected=PMU2 | Actual=None | J=259.8539 | corrected=0.4741 | reduction=0.998
 
-[FAULT EVENT] t=3.999 s | Detected=PMU2 | Actual=None | J=253.2768 | corrected=1.2562 | reduction=0.995
+[FAULT EVENT] t=3.999 s | Detected=PMU2 | Actual=None | J=290.7204 | corrected=1.2385 | reduction=0.996
 
-[FAULT EVENT] t=4.059 s | Detected=PMU2 | Actual=None | J=218.5681 | corrected=1.4083 | reduction=0.994
+[FAULT EVENT] t=4.059 s | Detected=PMU2 | Actual=None | J=266.1758 | corrected=2.1852 | reduction=0.992
 
-[FAULT EVENT] t=4.119 s | Detected=PMU2 | Actual=None | J=226.2181 | corrected=2.8753 | reduction=0.987
+[FAULT EVENT] t=4.119 s | Detected=PMU2 | Actual=None | J=283.8214 | corrected=0.8353 | reduction=0.997
 
-[FAULT EVENT] t=4.179 s | Detected=PMU2 | Actual=None | J=207.1612 | corrected=2.8909 | reduction=0.986
+[FAULT EVENT] t=4.179 s | Detected=PMU2 | Actual=None | J=252.3011 | corrected=0.2706 | reduction=0.999
 
-[FAULT EVENT] t=4.239 s | Detected=PMU2 | Actual=None | J=228.7900 | corrected=0.6739 | reduction=0.997
+[FAULT EVENT] t=4.239 s | Detected=PMU2 | Actual=None | J=242.1009 | corrected=0.0630 | reduction=1.000
 
-[FAULT EVENT] t=4.299 s | Detected=PMU2 | Actual=None | J=235.9082 | corrected=3.3158 | reduction=0.986
+[FAULT EVENT] t=4.299 s | Detected=PMU2 | Actual=None | J=266.9713 | corrected=0.9928 | reduction=0.996
 
-[FAULT EVENT] t=4.359 s | Detected=PMU2 | Actual=None | J=231.6762 | corrected=0.1434 | reduction=0.999
+[FAULT EVENT] t=4.359 s | Detected=PMU2 | Actual=None | J=251.9591 | corrected=1.0727 | reduction=0.996
 
-[FAULT EVENT] t=4.419 s | Detected=PMU2 | Actual=None | J=211.2361 | corrected=1.2737 | reduction=0.994
+[FAULT EVENT] t=4.419 s | Detected=PMU2 | Actual=None | J=268.2443 | corrected=1.3434 | reduction=0.995
 
-[FAULT EVENT] t=4.479 s | Detected=PMU2 | Actual=None | J=231.7162 | corrected=2.3178 | reduction=0.990
+[FAULT EVENT] t=4.479 s | Detected=PMU2 | Actual=None | J=279.0444 | corrected=0.7138 | reduction=0.997
 
-[FAULT EVENT] t=4.539 s | Detected=PMU2 | Actual=None | J=238.7776 | corrected=1.3989 | reduction=0.994
+[FAULT EVENT] t=4.539 s | Detected=PMU2 | Actual=None | J=261.9350 | corrected=1.3687 | reduction=0.995
 
-[FAULT EVENT] t=4.599 s | Detected=PMU2 | Actual=None | J=215.4725 | corrected=1.9601 | reduction=0.991
+[FAULT EVENT] t=4.599 s | Detected=PMU2 | Actual=None | J=280.4437 | corrected=1.2165 | reduction=0.996
 
-[FAULT EVENT] t=4.659 s | Detected=PMU2 | Actual=None | J=234.0359 | corrected=1.2645 | reduction=0.995
+[FAULT EVENT] t=4.659 s | Detected=PMU2 | Actual=None | J=266.1753 | corrected=1.7525 | reduction=0.993
 
-[FAULT EVENT] t=4.719 s | Detected=PMU2 | Actual=None | J=223.7986 | corrected=3.9895 | reduction=0.982
+[FAULT EVENT] t=4.719 s | Detected=PMU2 | Actual=None | J=236.2723 | corrected=0.6353 | reduction=0.997
 
-[FAULT EVENT] t=4.779 s | Detected=PMU2 | Actual=None | J=229.1718 | corrected=3.7133 | reduction=0.984
+[FAULT EVENT] t=4.779 s | Detected=PMU2 | Actual=None | J=236.2730 | corrected=1.4876 | reduction=0.994
 
-[FAULT EVENT] t=4.839 s | Detected=PMU2 | Actual=None | J=227.4488 | corrected=1.7300 | reduction=0.992
+[FAULT EVENT] t=4.839 s | Detected=PMU2 | Actual=None | J=254.5271 | corrected=0.2359 | reduction=0.999
 
-[FAULT EVENT] t=4.899 s | Detected=PMU2 | Actual=None | J=222.0371 | corrected=3.4966 | reduction=0.984
+[FAULT EVENT] t=4.899 s | Detected=PMU2 | Actual=None | J=247.3724 | corrected=1.3135 | reduction=0.995
 
-[FAULT EVENT] t=4.959 s | Detected=PMU2 | Actual=None | J=215.9823 | corrected=1.0910 | reduction=0.995
+[FAULT EVENT] t=4.959 s | Detected=PMU2 | Actual=None | J=267.7679 | corrected=0.0117 | reduction=1.000
 
-[FAULT EVENT] t=5.019 s | Detected=PMU2 | Actual=None | J=222.9028 | corrected=1.4170 | reduction=0.994
+[FAULT EVENT] t=5.019 s | Detected=PMU2 | Actual=None | J=264.4152 | corrected=0.4701 | reduction=0.998
 
-[FAULT EVENT] t=5.079 s | Detected=PMU2 | Actual=None | J=231.3331 | corrected=2.1656 | reduction=0.991
+[FAULT EVENT] t=5.079 s | Detected=PMU2 | Actual=None | J=253.0807 | corrected=0.5681 | reduction=0.998
 
-[FAULT EVENT] t=5.139 s | Detected=PMU2 | Actual=None | J=213.5705 | corrected=2.1248 | reduction=0.990
+[FAULT EVENT] t=5.139 s | Detected=PMU2 | Actual=None | J=269.2948 | corrected=0.5751 | reduction=0.998
 
-[FAULT EVENT] t=5.199 s | Detected=PMU2 | Actual=None | J=235.1398 | corrected=3.0100 | reduction=0.987
+[FAULT EVENT] t=5.199 s | Detected=PMU2 | Actual=None | J=244.0663 | corrected=0.2380 | reduction=0.999
 
-[FAULT EVENT] t=5.259 s | Detected=PMU2 | Actual=None | J=223.1198 | corrected=0.9305 | reduction=0.996
+[FAULT EVENT] t=5.259 s | Detected=PMU2 | Actual=None | J=265.4617 | corrected=0.3116 | reduction=0.999
 
-[FAULT EVENT] t=5.319 s | Detected=PMU2 | Actual=None | J=214.5307 | corrected=1.1554 | reduction=0.995
+[FAULT EVENT] t=5.319 s | Detected=PMU2 | Actual=None | J=247.9634 | corrected=0.7228 | reduction=0.997
 
-[FAULT EVENT] t=5.379 s | Detected=PMU2 | Actual=None | J=198.8757 | corrected=0.9344 | reduction=0.995
+[FAULT EVENT] t=5.379 s | Detected=PMU2 | Actual=None | J=268.9291 | corrected=1.9914 | reduction=0.993
 
-[FAULT EVENT] t=5.439 s | Detected=PMU2 | Actual=None | J=238.6365 | corrected=2.4948 | reduction=0.990
+[FAULT EVENT] t=5.439 s | Detected=PMU2 | Actual=None | J=249.1338 | corrected=0.1571 | reduction=0.999
 
-[FAULT EVENT] t=5.499 s | Detected=PMU2 | Actual=None | J=223.1767 | corrected=4.0070 | reduction=0.982
+[FAULT EVENT] t=5.499 s | Detected=PMU2 | Actual=None | J=292.9484 | corrected=1.7097 | reduction=0.994
 
-[FAULT EVENT] t=5.559 s | Detected=PMU2 | Actual=None | J=235.3839 | corrected=1.4238 | reduction=0.994
+[FAULT EVENT] t=5.559 s | Detected=PMU2 | Actual=None | J=256.9287 | corrected=1.2426 | reduction=0.995
 
-[FAULT EVENT] t=5.619 s | Detected=PMU2 | Actual=None | J=213.1337 | corrected=1.3398 | reduction=0.994
+[FAULT EVENT] t=5.619 s | Detected=PMU2 | Actual=None | J=268.6229 | corrected=0.6307 | reduction=0.998
 
-[FAULT EVENT] t=5.679 s | Detected=PMU2 | Actual=None | J=196.9786 | corrected=1.9463 | reduction=0.990
+[FAULT EVENT] t=5.679 s | Detected=PMU2 | Actual=None | J=267.0576 | corrected=0.7494 | reduction=0.997
 
-[FAULT EVENT] t=5.739 s | Detected=PMU2 | Actual=None | J=207.5449 | corrected=2.2272 | reduction=0.989
+[FAULT EVENT] t=5.739 s | Detected=PMU2 | Actual=None | J=273.8597 | corrected=0.3733 | reduction=0.999
 
-[FAULT EVENT] t=5.799 s | Detected=PMU2 | Actual=None | J=222.7877 | corrected=2.8311 | reduction=0.987
+[FAULT EVENT] t=5.799 s | Detected=PMU2 | Actual=None | J=233.5882 | corrected=0.8118 | reduction=0.997
 
-[FAULT EVENT] t=5.859 s | Detected=PMU2 | Actual=None | J=218.4690 | corrected=1.1046 | reduction=0.995
+[FAULT EVENT] t=5.859 s | Detected=PMU2 | Actual=None | J=275.4244 | corrected=0.2203 | reduction=0.999
 
-[FAULT EVENT] t=5.919 s | Detected=PMU2 | Actual=None | J=227.5078 | corrected=1.1725 | reduction=0.995
+[FAULT EVENT] t=5.919 s | Detected=PMU2 | Actual=None | J=266.8649 | corrected=0.6485 | reduction=0.998
 
-[FAULT EVENT] t=5.979 s | Detected=PMU2 | Actual=None | J=234.8474 | corrected=1.6188 | reduction=0.993
+[FAULT EVENT] t=5.979 s | Detected=PMU2 | Actual=None | J=265.9557 | corrected=0.9619 | reduction=0.996
 
 ==============================================
  Automatic Monitoring Summary

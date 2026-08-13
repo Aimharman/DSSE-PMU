@@ -124,7 +124,6 @@ PACKET_LOSS_PROB = 0.02
 # Injection mode:
 #   "periodic"
 #   "random"
-#   "random_event"
 #   "faulty_pmu"
 
 BAD_DATA_MODE = "random_event"  # Options: "periodic", "random", "random_event", "faulty_pmu"
