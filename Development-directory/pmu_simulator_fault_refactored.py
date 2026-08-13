@@ -83,8 +83,8 @@ if PRINT_SYNC_OFFSETS:
 # BAD DATA CONFIGURATION
 ###########################################################################
 
-BAD_PMU = 1  # Periodic mode selects PMUs deterministically in round-robin order
-
+#BAD_PMU = 1  # Periodic mode selects PMUs deterministically in round-robin order
+BAD_PMU = np.random.randint(1, 4)
 MAG_NOISE_STD = 0.005
 PHASE_NOISE_STD = 0.2
 
@@ -96,7 +96,7 @@ PACKET_LOSS_PROB = 0.02
 #   "random"
 #   "faulty_pmu"
 
-BAD_DATA_MODE = "periodic"  # Options: "periodic", "random", "faulty_pmu"
+BAD_DATA_MODE = "random"  # Options: "periodic", "random", "faulty_pmu"
 
 # Periodic / random mode
 BAD_DATA_INTERVAL = 500          # Start a new periodic fault every 500 samples = 0.5 s
@@ -106,10 +106,10 @@ BAD_PHASE_ERROR = 20.0
 BAD_MAG_SCALE = 1.20
 
 # Faulty PMU mode
-FAULTY_PMU = 1
+FAULTY_PMU = 3
 FAULT_START_TIME = 2.0
 # main.py uses the latest CSV row, so keep the fault active through the final sample.
-FAULT_END_TIME = SIMULATION_TIME
+FAULT_END_TIME = 6
 FAULT_PHASE_ERROR = 20.0
 FAULT_MAG_SCALE = 1.20
 
