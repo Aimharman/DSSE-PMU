@@ -1,0 +1,103 @@
+
+==============================================
+ Automatic PDC Monitoring
+==============================================
+CSV samples             : 10000
+Valid DSSE samples      : 9981
+PDC scan rate           : 50.0 Hz
+Scan interval           : 20 samples
+First evaluated sample  : 19
+Last evaluated sample   : 9999
+Evaluation points       : 500
+
+----------------------------------------------
+ Robust Chi-Square Calibration
+----------------------------------------------
+Degrees of freedom      : 6
+Theoretical threshold   : 12.591587
+Baseline median J       : 2.724329
+Baseline MAD            : 0.816360
+MAD scale factor        : 1.4826
+Robust sigma multiplier : 6.0
+Operating threshold     : 12.591587
+Truth window            : 20 raw samples
+Ground truth is used only for post-run evaluation.
+----------------------------------------------
+
+[FAULT EVENT] t=0.119 s | Detected=PMU2 | Actual=PMU2 | J=758.6832 | corrected=0.4979 | reduction=0.999
+
+[FAULT EVENT] t=0.159 s | Detected=PMU2 | Actual=PMU2 | J=774.2395 | corrected=2.5340 | reduction=0.997
+
+[FAULT EVENT] t=0.259 s | Detected=PMU1 | Actual=PMU1 | J=785.9657 | corrected=0.3209 | reduction=1.000
+
+[FAULT EVENT] t=0.279 s | Detected=PMU1 | Actual=PMU1 | J=826.0660 | corrected=0.0247 | reduction=1.000
+
+[FAULT EVENT] t=1.739 s | Detected=PMU1 | Actual=PMU1 | J=239.5834 | corrected=0.0029 | reduction=1.000
+
+[FAULT EVENT] t=1.779 s | Detected=PMU1 | Actual=PMU1 | J=239.0164 | corrected=0.0275 | reduction=1.000
+
+[FAULT EVENT] t=2.199 s | Detected=PMU2 | Actual=PMU2 | J=766.7053 | corrected=1.8277 | reduction=0.998
+
+[FAULT EVENT] t=3.339 s | Detected=PMU2 | Actual=PMU2 | J=267.8502 | corrected=0.8194 | reduction=0.997
+
+[FAULT EVENT] t=3.439 s | Detected=PMU2 | Actual=PMU2 | J=269.7534 | corrected=1.8452 | reduction=0.993
+
+[FAULT EVENT] t=3.459 s | Detected=PMU2 | Actual=PMU2 | J=267.8418 | corrected=0.1859 | reduction=0.999
+
+[FAULT EVENT] t=3.579 s | Detected=PMU3 | Actual=PMU3 | J=683.3304 | corrected=4.4475 | reduction=0.993
+
+[FAULT EVENT] t=3.879 s | Detected=PMU2 | Actual=PMU2 | J=757.1181 | corrected=4.3101 | reduction=0.994
+
+[FAULT EVENT] t=4.159 s | Detected=PMU2 | Actual=PMU2 | J=269.0702 | corrected=2.3666 | reduction=0.991
+
+[FAULT EVENT] t=4.179 s | Detected=PMU2 | Actual=PMU2 | J=269.7036 | corrected=2.1049 | reduction=0.992
+
+[FAULT EVENT] t=4.619 s | Detected=PMU3 | Actual=PMU3 | J=709.1193 | corrected=1.9298 | reduction=0.997
+
+[FAULT EVENT] t=4.659 s | Detected=PMU3 | Actual=PMU3 | J=712.2104 | corrected=2.0939 | reduction=0.997
+
+[FAULT EVENT] t=5.019 s | Detected=PMU1 | Actual=PMU1 | J=786.8719 | corrected=0.2468 | reduction=1.000
+
+[FAULT EVENT] t=5.199 s | Detected=PMU1 | Actual=PMU1 | J=799.8132 | corrected=0.1096 | reduction=1.000
+
+[FAULT EVENT] t=5.739 s | Detected=PMU3 | Actual=PMU3 | J=244.5954 | corrected=2.4281 | reduction=0.990
+
+[FAULT EVENT] t=5.819 s | Detected=PMU1 | Actual=PMU1 | J=790.1484 | corrected=0.0069 | reduction=1.000
+
+[FAULT EVENT] t=5.859 s | Detected=PMU1 | Actual=PMU1 | J=798.3725 | corrected=0.0275 | reduction=1.000
+
+[FAULT EVENT] t=5.879 s | Detected=PMU2 | Actual=PMU1,PMU2 | J=267.1518 | corrected=0.6227 | reduction=0.998
+
+[FAULT EVENT] t=5.919 s | Detected=PMU2 | Actual=PMU2 | J=270.5348 | corrected=2.5420 | reduction=0.991
+
+[FAULT EVENT] t=7.319 s | Detected=PMU2 | Actual=PMU2 | J=783.7593 | corrected=3.4165 | reduction=0.996
+
+[FAULT EVENT] t=7.639 s | Detected=PMU2 | Actual=PMU2 | J=756.8488 | corrected=1.2442 | reduction=0.998
+
+[FAULT EVENT] t=7.659 s | Detected=PMU2 | Actual=PMU2 | J=763.2245 | corrected=2.5088 | reduction=0.997
+
+[FAULT EVENT] t=7.779 s | Detected=PMU2 | Actual=PMU2 | J=268.3150 | corrected=3.0941 | reduction=0.988
+
+[FAULT EVENT] t=8.899 s | Detected=PMU2 | Actual=PMU2 | J=767.0895 | corrected=2.7170 | reduction=0.996
+
+[FAULT EVENT] t=8.919 s | Detected=PMU2 | Actual=PMU2 | J=772.8515 | corrected=1.5635 | reduction=0.998
+
+[FAULT EVENT] t=9.179 s | Detected=PMU3 | Actual=PMU3 | J=664.4403 | corrected=1.5734 | reduction=0.998
+
+[FAULT EVENT] t=9.459 s | Detected=PMU2 | Actual=PMU2 | J=749.1390 | corrected=1.4325 | reduction=0.998
+
+[FAULT EVENT] t=9.519 s | Detected=PMU3 | Actual=PMU2,PMU3 | J=738.3124 | corrected=0.8858 | reduction=0.999
+
+==============================================
+ Automatic Monitoring Summary
+==============================================
+Evaluation points       : 500
+Global chi-square fails : 58
+PMU candidates          : 58
+Confirmed fault points  : 58
+Confirmed fault events  : 22
+PMU1: ground_truth=17, TP=12, FP=0, FN=5, TN=483, precision=1.000, recall=0.706
+PMU2: ground_truth=44, TP=32, FP=0, FN=12, TN=456, precision=1.000, recall=0.727
+PMU3: ground_truth=17, TP=14, FP=0, FN=3, TN=483, precision=1.000, recall=0.824
+==============================================
+Results CSV : /home/ankesh/Documents/IIT_Jammu/DSSE-PMU/Development-directory/PDC_Detection_Results.csv
