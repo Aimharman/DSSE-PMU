@@ -3,264 +3,425 @@
 chi_square.py
 
 Chi-Square Bad Data Detection
+Stage 3.8 + PMU-level fault localization
 
-Stage 3.8
+The detector has two levels:
 
-Computes
+1. Global chi-square test:
+       J = r^T W r
 
-        J = rᵀWr
+2. PMU-level screening:
+       J_PMU = sum(r_i^2 W_ii)
 
-and compares it with the theoretical
-Chi-square threshold.
+A PMU is considered a fault candidate only when:
+    - the global statistic exceeds the global threshold,
+    - one PMU contributes enough normalized residual energy,
+    - that PMU contributes a significant fraction of total residual energy.
 
+The second stage prevents ordinary distributed model/noise residuals
+from being immediately interpreted as a faulty PMU.
 ===========================================================
 """
 
 import re
-
 import numpy as np
-
 from scipy.stats import chi2
 
 
 class ChiSquareDetector:
 
-    def __init__(self, confidence=0.95):
-
+    def __init__(
+        self,
+        confidence=0.95,
+        pmu_measurement_count=4,
+        pmu_share_threshold=0.55,
+    ):
         self.confidence = confidence
+        self.pmu_measurement_count = pmu_measurement_count
+        self.pmu_share_threshold = pmu_share_threshold
 
-    ########################################################
-    # Chi-Square Statistic
-    ########################################################
+    # ---------------------------------------------------------
+    # Global statistic
+    # ---------------------------------------------------------
 
     def compute_statistic(self, residual, W):
-        """
-        Computes
+        residual = np.asarray(residual, dtype=float).reshape(-1)
 
-            J = rᵀWr
-        """
+        if W.ndim == 2:
+            diagonal = np.diag(W)
+        else:
+            diagonal = np.asarray(W, dtype=float).reshape(-1)
 
-        J = residual.T @ W @ residual
+        return float(np.sum((residual ** 2) * diagonal))
 
-        return float(J)
+    # ---------------------------------------------------------
+    # Degrees of freedom
+    # ---------------------------------------------------------
 
-    ########################################################
-    # Degrees of Freedom
-    ########################################################
+    def degrees_of_freedom(self, num_measurements, num_states):
+        return int(num_measurements - num_states)
 
-    def degrees_of_freedom(self,
-                           num_measurements,
-                           num_states):
-
-        """
-        ν = m − n
-        """
-
-        return num_measurements - num_states
-
-    ########################################################
-    # Chi-Square Threshold
-    ########################################################
+    # ---------------------------------------------------------
+    # Chi-square threshold
+    # ---------------------------------------------------------
 
     def threshold(self, dof):
+        return float(chi2.ppf(self.confidence, dof))
 
+    # ---------------------------------------------------------
+    # PMU residual-energy decomposition
+    # ---------------------------------------------------------
+
+    def pmu_contributions(self, residual, W, measurement_names=None):
         """
-        Computes
+        Return normalized residual energy grouped by PMU.
 
-            χ²(confidence, dof)
-        """
+        For each measurement:
+            e_i = r_i^2 W_ii
 
-        return chi2.ppf(self.confidence, dof)
+        For each PMU:
+            E_PMU = sum(e_i)
 
-    ########################################################
-    # Bad-Data Localization
-    ########################################################
-
-    def localize_bad_data(self, residual, W, measurement_names=None):
-        """
-        Identify the most suspicious measurement using a simplified
-        residual-based heuristic.
-
-        For a diagonal weight matrix, the score is
-
-            score_i = |r_i| * sqrt(W_ii)
-
-        This is a simplified normalized-residual heuristic and is not
-        the full statistically rigorous normalized residual test.
-        Larger scores indicate measurements that are less consistent
-        with the current estimate.
+        The PMU share is:
+            E_PMU / J
         """
 
         residual = np.asarray(residual, dtype=float).reshape(-1)
 
         if W.ndim == 2:
-            diag_weights = np.diag(W)
+            diagonal = np.diag(W)
         else:
-            diag_weights = np.asarray(W, dtype=float).reshape(-1)
+            diagonal = np.asarray(W, dtype=float).reshape(-1)
 
-        diag_weights = np.maximum(np.abs(diag_weights), 1e-12)
-        scores = np.abs(residual) * np.sqrt(diag_weights)
+        diagonal = np.maximum(np.abs(diagonal), 1e-12)
+
+        if measurement_names is None:
+            measurement_names = [
+                f"measurement_{i + 1}"
+                for i in range(len(residual))
+            ]
+
+        totals = {}
+        indices = {}
+
+        for idx, name in enumerate(measurement_names):
+            match = re.search(
+                r"PMU\s*\d+",
+                str(name),
+                flags=re.IGNORECASE,
+            )
+
+            if match:
+                pmu = match.group(0).upper().replace(" ", "")
+            else:
+                pmu = str(name).split()[0]
+
+            totals.setdefault(pmu, 0.0)
+            indices.setdefault(pmu, [])
+
+            contribution = float(
+                residual[idx] ** 2 * diagonal[idx]
+            )
+
+            totals[pmu] += contribution
+            indices[pmu].append(idx)
+
+        J = float(sum(totals.values()))
+
+        ranked = []
+
+        for pmu, energy in totals.items():
+            ranked.append({
+                "pmu": pmu,
+                "energy": float(energy),
+                "share": (
+                    float(energy / J)
+                    if J > 0.0
+                    else 0.0
+                ),
+                "indices": indices[pmu],
+            })
+
+        ranked.sort(
+            key=lambda item: item["energy"],
+            reverse=True,
+        )
+
+        return ranked
+
+    # ---------------------------------------------------------
+    # PMU fault candidate screening
+    # ---------------------------------------------------------
+
+    def screen_fault_candidate(
+        self,
+        residual,
+        W,
+        global_J,
+        global_threshold,
+        measurement_names=None,
+    ):
+        """
+        Decide whether a global chi-square failure has a
+        concentrated PMU signature.
+
+        The PMU-level reference uses the 95% chi-square
+        threshold for 4 measurements.
+
+        This is deliberately a screening stage, not a final
+        isolation decision. The final decision is made only
+        after re-estimation with the candidate PMU isolated.
+        """
+
+        pmu_data = self.pmu_contributions(
+            residual,
+            W,
+            measurement_names,
+        )
+
+        if not pmu_data:
+            return {
+                "candidate": False,
+                "pmu": "",
+                "energy": 0.0,
+                "share": 0.0,
+                "threshold": 0.0,
+                "pmu_data": [],
+            }
+
+        top = pmu_data[0]
+
+        pmu_threshold = float(
+            chi2.ppf(
+                self.confidence,
+                self.pmu_measurement_count,
+            )
+        )
+
+        candidate = (
+            global_J > global_threshold
+            and top["energy"] > pmu_threshold
+            and top["share"] >= self.pmu_share_threshold
+        )
+
+        return {
+            "candidate": bool(candidate),
+            "pmu": top["pmu"],
+            "energy": float(top["energy"]),
+            "share": float(top["share"]),
+            "threshold": pmu_threshold,
+            "pmu_data": pmu_data,
+        }
+
+    # ---------------------------------------------------------
+    # PMU localization
+    # ---------------------------------------------------------
+
+    def localize_faulty_pmu(
+        self,
+        residual,
+        W,
+        measurement_names=None,
+    ):
+        """
+        Rank PMUs by normalized residual energy.
+
+        This replaces the previous sum of absolute normalized
+        residuals. Since the global chi-square statistic itself is
+        an energy quantity, PMU-level energy is the consistent metric.
+        """
+
+        data = self.pmu_contributions(
+            residual,
+            W,
+            measurement_names,
+        )
+
+        if not data:
+            return "", [], 0.0
+
+        top = data[0]
+
+        return (
+            top["pmu"],
+            top["indices"],
+            top["energy"],
+        )
+
+    # ---------------------------------------------------------
+    # Legacy single-measurement localization
+    # ---------------------------------------------------------
+
+    def localize_bad_data(
+        self,
+        residual,
+        W,
+        measurement_names=None,
+    ):
+        residual = np.asarray(
+            residual,
+            dtype=float,
+        ).reshape(-1)
+
+        if W.ndim == 2:
+            diagonal = np.diag(W)
+        else:
+            diagonal = np.asarray(W).reshape(-1)
+
+        diagonal = np.maximum(
+            np.abs(diagonal),
+            1e-12,
+        )
+
+        scores = np.abs(residual) * np.sqrt(diagonal)
 
         index = int(np.argmax(scores))
+
         label = (
             measurement_names[index]
-            if measurement_names is not None and len(measurement_names) > index
+            if measurement_names is not None
+            and len(measurement_names) > index
             else f"measurement_{index + 1}"
         )
 
-        return index, label, float(scores[index])
+        return (
+            index,
+            label,
+            float(scores[index]),
+        )
 
-    def localize_faulty_pmu(self, residual, W, measurement_names=None):
-        """
-        Group measurements by PMU and identify the PMU whose aggregated
-        weighted residual contribution is largest.
+    # ---------------------------------------------------------
+    # Rolling PMU diagnostic retained for compatibility
+    # ---------------------------------------------------------
 
-        This is the correct strategy for correlated PMU faults, where a
-        single faulty PMU may affect several measurements simultaneously.
-        """
+    def detect_faulty_pmu(
+        self,
+        residual_history,
+        pmu_names=None,
+        window_size=3,
+        threshold=0.5,
+    ):
+        residual_history = np.asarray(
+            residual_history,
+            dtype=float,
+        )
 
-        residual = np.asarray(residual, dtype=float).reshape(-1)
-
-        if measurement_names is None:
-            measurement_names = [f"measurement_{idx + 1}" for idx in range(len(residual))]
-
-        if W.ndim == 2:
-            diag_weights = np.diag(W)
-        else:
-            diag_weights = np.asarray(W, dtype=float).reshape(-1)
-
-        diag_weights = np.maximum(np.abs(diag_weights), 1e-12)
-        weighted_scores = np.abs(residual) * np.sqrt(diag_weights)
-
-        pmu_totals = {}
-        pmu_indices = {}
-
-        for idx, name in enumerate(measurement_names):
-            match = re.search(r"PMU\s*\d+", str(name), flags=re.IGNORECASE)
-            if match:
-                pmu_label = match.group(0).upper().replace(" ", "")
-            else:
-                pmu_label = str(name).split()[0]
-
-            if pmu_label not in pmu_totals:
-                pmu_totals[pmu_label] = 0.0
-                pmu_indices[pmu_label] = []
-            pmu_totals[pmu_label] += float(weighted_scores[idx])
-            pmu_indices[pmu_label].append(idx)
-
-        faulty_pmu = max(pmu_totals.items(), key=lambda item: item[1])[0]
-        score = float(pmu_totals[faulty_pmu])
-        indices = pmu_indices[faulty_pmu]
-
-        return faulty_pmu, indices, score
-
-    ########################################################
-    # PMU-Level Faulty Detection
-    ########################################################
-
-    def detect_faulty_pmu(self, residual_history, pmu_names=None, window_size=3, threshold=0.5):
-        """
-        Detect a persistent faulty PMU by aggregating residual energy
-        over a rolling window of consecutive timestamps.
-
-        residual_history is expected to be shaped as
-            (num_windows, num_measurements)
-        or (num_timestamps, num_measurements), where each measurement
-        group belongs to a PMU.
-        """
-
-        residual_history = np.asarray(residual_history, dtype=float)
         if residual_history.ndim == 1:
             residual_history = residual_history.reshape(1, -1)
 
         if residual_history.shape[1] % 4 != 0:
-            raise ValueError("Residual history length must be a multiple of 4 for PMU groups.")
+            raise ValueError(
+                "Residual history length must be a multiple "
+                "of 4 for PMU groups."
+            )
 
         if pmu_names is None:
-            pmu_names = [f"PMU{idx + 1}" for idx in range(residual_history.shape[1] // 4)]
+            pmu_names = [
+                f"PMU{i + 1}"
+                for i in range(
+                    residual_history.shape[1] // 4
+                )
+            ]
 
-        n_measurements = residual_history.shape[1]
-        n_pmus = n_measurements // 4
+        results = []
 
-        scores = []
-        for pmu_idx in range(n_pmus):
-            pmu_slice = slice(4 * pmu_idx, 4 * pmu_idx + 4)
-            pmu_residuals = residual_history[:, pmu_slice]
-            pmu_energy = np.linalg.norm(pmu_residuals, axis=1)
+        for pmu_idx, pmu_name in enumerate(pmu_names):
+            block = residual_history[
+                :,
+                4 * pmu_idx:4 * pmu_idx + 4,
+            ]
 
-            if pmu_residuals.shape[0] >= window_size:
-                window = np.array([
-                    np.mean(pmu_energy[max(0, t - window_size + 1):t + 1])
-                    for t in range(pmu_residuals.shape[0])
+            energy = np.linalg.norm(
+                block,
+                axis=1,
+            )
+
+            if len(energy) >= window_size:
+                rolling = np.array([
+                    np.mean(
+                        energy[
+                            max(0, t - window_size + 1):
+                            t + 1
+                        ]
+                    )
+                    for t in range(len(energy))
                 ])
             else:
-                window = np.full(pmu_residuals.shape[0], np.mean(pmu_energy))
+                rolling = np.full(
+                    len(energy),
+                    np.mean(energy),
+                )
 
-            score = float(np.mean(window))
-            scores.append({
-                "pmu": pmu_names[pmu_idx],
-                "score": score,
-                "window_score": float(np.max(window)),
-                "mean_energy": float(np.mean(pmu_energy)),
+            results.append({
+                "pmu": pmu_name,
+                "score": float(np.mean(rolling)),
+                "window_score": float(np.max(rolling)),
+                "mean_energy": float(np.mean(energy)),
             })
 
-        ranked = sorted(scores, key=lambda x: x["score"], reverse=True)
-        suspicious = [entry for entry in ranked if entry["score"] >= threshold]
+        return [
+            item
+            for item in sorted(
+                results,
+                key=lambda x: x["score"],
+                reverse=True,
+            )
+            if item["score"] >= threshold
+        ]
 
-        if not suspicious:
-            return []
+    # ---------------------------------------------------------
+    # Global detection
+    # ---------------------------------------------------------
 
-        return suspicious
-
-    ########################################################
-    # Detection
-    ########################################################
-
-    def detect(self,
-               residual,
-               W,
-               num_measurements,
-               num_states):
-
-        J = self.compute_statistic(residual, W)
+    def detect(
+        self,
+        residual,
+        W,
+        num_measurements,
+        num_states,
+        verbose=True,
+    ):
+        J = self.compute_statistic(
+            residual,
+            W,
+        )
 
         dof = self.degrees_of_freedom(
             num_measurements,
-            num_states
+            num_states,
         )
 
         threshold = self.threshold(dof)
 
-        print("\n==============================================")
-        print(" Chi-Square Bad Data Detection")
-        print("==============================================")
+        bad_data = bool(J > threshold)
 
-        print(f"\nDegrees of Freedom : {dof}")
+        if verbose:
+            print("\n==============================================")
+            print(" Chi-Square Bad Data Detection")
+            print("==============================================")
+            print(f"\nDegrees of Freedom : {dof}")
+            print(
+                f"Confidence Level   : "
+                f"{self.confidence * 100:.1f}%"
+            )
+            print("\nChi-Square Statistic (J)")
+            print(J)
+            print("\nCritical Threshold")
+            print(threshold)
 
-        print(f"Confidence Level   : {self.confidence * 100:.1f}%")
+            if bad_data:
+                print("\nResult")
+                print("✗ Measurement set FAILED")
+                print("Bad data detected.")
+            else:
+                print("\nResult")
+                print("✓ Measurement set PASSED")
+                print("No bad data detected.")
 
-        print(f"\nChi-Square Statistic (J)")
-        print(J)
+            print("==============================================")
 
-        print(f"\nCritical Threshold")
-        print(threshold)
-
-        if J <= threshold:
-
-            print("\nResult")
-            print("✓ Measurement set PASSED")
-            print("No bad data detected.")
-
-            bad_data = False
-
-        else:
-
-            print("\nResult")
-            print("✗ Measurement set FAILED")
-            print("Bad data detected.")
-
-            bad_data = True
-
-        print("==============================================")
-
-        return bad_data, J, threshold
+        return (
+            bad_data,
+            J,
+            threshold,
+        )
