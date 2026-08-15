@@ -57,7 +57,7 @@ LINE_RESISTANCE = 0.30         # Ohm
 ENABLE_SYNC_ERROR = True          # Small, normal PMU-to-PMU offset
 ENABLE_MEASUREMENT_NOISE = True
 ENABLE_PACKET_LOSS = False
-ENABLE_BAD_DATA = True
+ENABLE_BAD_DATA = False
 
 # Deliberate synchronization fault.
 # This is kept SEPARATE from BAD_DATA_MODE so a phase bad-data spike
@@ -71,7 +71,7 @@ SYNC_FAULT_PHASE_ERROR = 10.0     # degrees
 # Deliberate clock-drift fault.
 # Clock drift is modeled as a time-base error and therefore produces a
 # phase error that grows with time; it is NOT a fixed phase jump.
-ENABLE_CLOCK_DRIFT = False
+ENABLE_CLOCK_DRIFT = True
 CLOCK_DRIFT_PMU = 2
 CLOCK_DRIFT_START_TIME = 2.0
 CLOCK_DRIFT_END_TIME = 8.0
@@ -79,6 +79,10 @@ CLOCK_DRIFT_PPM = 1000.0           # 1000 ppm = 0.1% clock-rate error
 
 # Normal fixed PMU synchronization offsets
 SYNC_STD_DEG = 1.0
+
+# PMU1_SYNC_OFFSET = 0
+# PMU2_SYNC_OFFSET = 0
+# PMU3_SYNC_OFFSET = 0
 
 PMU1_SYNC_OFFSET = np.random.normal(0, SYNC_STD_DEG)
 PMU2_SYNC_OFFSET = np.random.normal(0, SYNC_STD_DEG)
