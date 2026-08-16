@@ -33,6 +33,10 @@ PRINT_PACKET_LOSS = False
 PRINT_BAD_DATA = False
 PRINT_SYNC_OFFSETS = True
 
+# Set to True only when you want the GUI live plot to open.
+# Set to False for headless batch runs when you only need the CSV/log output.
+SHOW_PLOT = False
+
 
 ###########################################################################
 # USER CONFIGURATION
@@ -769,7 +773,8 @@ def setup_csv():
 def finish_simulation():
     global csv_file
 
-    timer.stop()
+    if timer is not None:
+        timer.stop()
 
     if csv_file is not None:
         csv_file.flush()
@@ -859,6 +864,8 @@ def update_plot():
     For the normal 10 s / 1000 Hz case, updating 10,000 points every
     millisecond is unnecessary. Plot only every PLOT_UPDATE_SAMPLES samples.
     """
+    if not SHOW_PLOT:
+        return
     if sample_index == 0:
         return
 
@@ -1323,14 +1330,16 @@ def generate_one_sample():
         sample_index % PLOT_UPDATE_SAMPLES == 0
         or sample_index == TOTAL_SAMPLES
     ):
-        update_plot()
+        if SHOW_PLOT:
+            update_plot()
 
     #######################################################################
     # 4. End simulation
     #######################################################################
 
     if sample_index >= TOTAL_SAMPLES:
-        update_plot()
+        if SHOW_PLOT:
+            update_plot()
         finish_simulation()
 
 
@@ -1617,5 +1626,26 @@ def create_live_plot():
 if __name__ == "__main__":
     validate_fault_configuration()
     setup_csv()
-    app = create_live_plot()
-    sys.exit(app.exec())
+
+    if SHOW_PLOT:
+        app = create_live_plot()
+        sys.exit(app.exec())
+
+    print("==============================================")
+    print(" PMU Simulator - Headless Batch Run")
+    print("==============================================")
+    print(f"show_plot           : {SHOW_PLOT}")
+    print(f"Frequency           : {FREQUENCY} Hz")
+    print(f"ODR                 : {ODR} Samples/sec")
+    print(f"Simulation Time     : {SIMULATION_TIME} s")
+    print(f"Samples/Cycle       : {N}")
+    print(f"Total Samples       : {TOTAL_SAMPLES}")
+    print("CSV                 : APPENDING LIVE (headless)")
+    print("Plot                : DISABLED")
+    print("==============================================")
+
+    while sample_index < TOTAL_SAMPLES:
+        generate_one_sample()
+
+    finish_simulation()
+    print("Headless run complete.")
