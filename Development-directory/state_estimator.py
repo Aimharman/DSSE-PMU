@@ -17,6 +17,8 @@ is required.
 ===========================================================
 """
 
+import os
+
 import numpy as np
 import pandas as pd
 
@@ -29,10 +31,26 @@ from measurement_model import measurement_model
 class StateEstimator:
 
     def __init__(self, csv_file, sample_index=None):
-        self.csv_file = csv_file
+        self.csv_file = self._resolve_csv_path(csv_file)
         self.sample_index = sample_index
 
-        self.df = pd.read_csv(csv_file)
+        self.df = pd.read_csv(self.csv_file)
+
+    @staticmethod
+    def _resolve_csv_path(csv_file):
+        if csv_file is None:
+            return csv_file
+
+        path = str(csv_file)
+        if os.path.exists(path):
+            return path
+
+        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        candidate = os.path.join(project_root, os.path.basename(path))
+        if os.path.exists(candidate):
+            return candidate
+
+        return path
 
         self.selected_row = None
         self.selected_index = None

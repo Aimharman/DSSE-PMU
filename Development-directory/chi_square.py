@@ -137,6 +137,54 @@ class ChiSquareDetector:
         return bad_data, J, threshold
 
     # ---------------------------------------------------------
+    # PMU-level rolling-window detection
+    # ---------------------------------------------------------
+
+    def detect_faulty_pmu(self, residual_history, pmu_names=None, window_size=3, threshold=0.5):
+        """
+        Identify a persistently faulty PMU by accumulating PMU residual energy
+        over a rolling window.
+        """
+
+        residual_history = np.asarray(residual_history, dtype=float)
+        if residual_history.ndim == 1:
+            residual_history = residual_history.reshape(1, -1)
+
+        if residual_history.shape[1] % self.pmu_measurement_count != 0:
+            raise ValueError("Residual history length must be a multiple of PMU measurements.")
+
+        if pmu_names is None:
+            pmu_names = [f"PMU{idx + 1}" for idx in range(residual_history.shape[1] // self.pmu_measurement_count)]
+
+        num_pmus = residual_history.shape[1] // self.pmu_measurement_count
+        results = []
+
+        for pmu_index in range(num_pmus):
+            start = pmu_index * self.pmu_measurement_count
+            stop = start + self.pmu_measurement_count
+            pmu_residuals = residual_history[:, start:stop]
+            pmu_energy = np.linalg.norm(pmu_residuals, axis=1)
+
+            if pmu_residuals.shape[0] < window_size:
+                rolling_score = float(np.mean(pmu_energy))
+            else:
+                rolling_scores = []
+                for pos in range(len(pmu_energy)):
+                    window = pmu_energy[max(0, pos - window_size + 1):pos + 1]
+                    rolling_scores.append(float(np.mean(window)))
+                rolling_score = float(np.mean(rolling_scores))
+
+            results.append({
+                "pmu": pmu_names[pmu_index],
+                "score": rolling_score,
+                "window_score": float(np.max(pmu_energy)),
+                "mean_energy": float(np.mean(pmu_energy)),
+            })
+
+        ranked = sorted(results, key=lambda item: item["score"], reverse=True)
+        return [item for item in ranked if item["score"] >= threshold]
+
+    # ---------------------------------------------------------
     # PMU contribution / localization
     # ---------------------------------------------------------
 

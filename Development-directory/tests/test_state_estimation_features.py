@@ -91,6 +91,17 @@ class TestStateEstimationFeatures(unittest.TestCase):
         self.assertEqual(pmu_indices, [8, 9, 10, 11])
         self.assertGreater(score, 0.0)
 
+    def test_neural_controller_maps_faults_to_management_actions(self):
+        from neural_active_fault_controller import NeuralActiveFaultController
+
+        controller = NeuralActiveFaultController()
+
+        self.assertEqual(controller.class_to_action["NORMAL"], "ACCEPT")
+        self.assertEqual(controller.class_to_action["BAD_DATA"], "DOWN_WEIGHT")
+        self.assertEqual(controller.class_to_action["SYNC_FAULT"], "PHASE_COMPENSATE")
+        self.assertEqual(controller.class_to_action["CLOCK_DRIFT"], "TIMING_CORRECTION")
+        self.assertEqual(controller.class_to_action["TRANSIENT_FAULT"], "ISOLATE")
+
 
 if __name__ == "__main__":
     unittest.main()
